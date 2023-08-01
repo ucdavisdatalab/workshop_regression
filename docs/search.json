@@ -4,6 +4,6 @@
     "href": "index.html",
     "title": "A Practical Introduction to Regression Modeling in R",
     "section": "",
-    "text": "Overview\nYOUR DESCRIPTION, LEARNING GOALS, PREREQUISITES, ETC"
+    "text": "Overview\n\n\nDescription\nRegression modeling — using input variables to predict or model the value of a response — is widely used in pretty much every field of research. Yet many graduate programs don’t include formal training in statistical modeling, and the DataLab’s office hours indicate widespread anxiety about using regression models in practice. This workshop is intended to help address that anxiety by teaching the fundamentals of using regression modeling in practice. The emphasis is on practice and intuition, with only a small amount of math. This workshop is open to all UC Davis graduate students and postdoctoral scholars. Attendance at both sessions is required. Instruction is in-person and seats are limited. A Zoom link (e.g., broadcast) will be available for those unable to attend who would like to watch live.\n\n\nLearning objectives\nAfter this workshop, learners will be able to: - Understand the differences between linear and generalized linear\nregression models - Understand the difference between fixed effects and random effects in regression models - Understand how continuous and categorical variables are handled\ndifferently in regression modeling software - Implement the above-mentioned model types - Read and interpret regression summary tables - Do diagnostic checks on your regression models"
   }
 ]
