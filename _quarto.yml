@@ -1,0 +1,31 @@
+project:
+  type: book
+  output-dir: docs
+  resources:
+    - /webr-serviceworker.js
+    - /webr-worker.js
+    - /data
+
+filter: webr
+
+book:
+  title: "A Practical Introduction to Regression Modeling in R"
+  author: "Wesley Brooks"
+  date: last-modified
+  date-format: D MMMM, YYYY
+  search: true
+  repo-url: https://github.com/ucdavisdatalab/workshop_regression
+  
+downloads: [pdf]
+  chapters:
+    - index.qmd
+
+  sidebar:
+    logo: 
+https://github.com/d-rug/d-rug.github.io/raw/main/DRUG_final_cobalt.png
+  site-url: https://d-rug.github.io
+
+format:
+  html:
+    theme: cosmo
+    number-sections: false
