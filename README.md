@@ -1,74 +1,38 @@
-# Template: Workshop Reader
-
-This repository is a template for workshop readers for the UC Davis DataLab.
-This template uses **bookdown** to knit the reader. You can also optionally use
-**renv** to manage packages and Git Large File Storage to manage large files
-(instructions included).
-
-To get started, create a new repo on GitHub from this template
-([instructions][gh]), then `git clone` your new repo.
-
-[gh]: https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
-
-Once you've cloned the repo, here's a checklist of things to do to prepare the
-repo:
-
-1. **renv** (optional): To set up **renv**, open R at the top level of the repo
-   and run:
-
-    ```r
-    renv::init()
-    ```
-
-    Restart R. Then, to install the **bookdown** toolchain to the project
-    package library, run:
-
-    ```r
-    install.packages("bookdown")
-    renv::snapshot()
-    ```
-
-    You can skip this step if you're not going to use **renv**.
-
-2. `index.Rmd`: Replace the all-caps text with your workshop details.
-    + Title (in 2 places, 1 of them in the `output:` HTML block)
-    + Author's name
-    + Repo name (in 4 places, 2 of them in the `output:` HTML block)
-    + Description, learning goals, & prerequisites
-
-3. `README.md`: Replace the all-caps text with your workshop details.
-    + Title
-    + Quarter & year
-    + Author's name & email
-    + Reader URL
-    + Event URL
-    + Description, learning goals, & prerequisites
-
-4. If this workshop does not have an assessment, delete `99_assessment.Rmd`.
-
-5. GitHub: In the repo's About section, add the reader URL and appropriate
-   tags.
-
-6. GitHub: In the repo's Settings page, enable GitHub pages. Set the branch to
-   `main` and the directory to `docs/`.
-
-7. `README.md`: Remove these template instructions, which end at the `#
-   Workshop:` header below
-
-8. `git add` all changed files, then `git commit` and `git push`.
-
-
-# Workshop: YOUR WORKSHOP TITLE
+# Workshop: A Practical Introduction to Regression Modeling
 
 _[UC Davis DataLab](https://datalab.ucdavis.edu/)_  
 _QUARTER YEAR_  
-_Instructor: YOUR NAME <<YOUR_EMAIL@ucdavis.edu>>_  
-_Maintainer: MAINTAINER'S NAME <<MAINTAINER_EMAIL@ucdavis.edu>>_
+_Instructor: Wesley Brooks <<wbrooks@ucdavis.edu>>_  
+_Maintainer: Wesley Brooks <<wbrooks@ucdavis.edu>>_
 
-* [Reader](https://ucdavisdatalab.github.io/YOUR_REPOSITORY/)
+* [Reader](https://ucdavisdatalab.github.io/workshop_regression/)
 * [Event Page](https://datalab.ucdavis.edu/eventscalendar/YOUR_EVENT/)
 
-YOUR DESCRIPTION, LEARNING GOALS, PREREQUISITES, ETC
+# Description
+Regression modeling — using input variables to predict or model the value 
+of a response — is widely used in pretty much every field of research. Yet 
+many graduate programs don't include formal training in statistical 
+modeling, and the DataLab's office hours indicate widespread anxiety about 
+using regression models in practice. This workshop is intended to help 
+address that anxiety by teaching the fundamentals of using regression 
+modeling in practice. The emphasis is on practice and intuition, with only 
+a small amount of math. This workshop is open to all UC Davis graduate 
+students and postdoctoral scholars. Attendance at both sessions is 
+required. Instruction is in-person and seats are limited. A Zoom link 
+(e.g., broadcast) will be available for those unable to attend who would 
+like to watch live.
+
+# Learning objectives
+After this workshop, learners will be able to:
+- Understand the differences between linear and generalized linear 
+regression models
+- Understand the difference between fixed effects and random effects in 
+regression models
+- Understand how continuous and categorical variables are handled 
+differently in regression modeling software
+- Implement the above-mentioned model types
+- Read and interpret regression summary tables
+- Do diagnostic checks on your regression models
 
 
 ## Contributing
