@@ -20,8 +20,8 @@ book:
     - index.qmd
   
   sidebar:
-    logo: 
-https://datalab.ucdavis.edu/wp-content/uploads/2019/07/datalab-logo-full-color-rgb-1.png
+    logo: https://datalab.ucdavis.edu/wp-content/uploads/2019/07/datalab-logo-full-color-rgb-1.png
+  
   site-url: https://d-rug.github.io
 
 format:
