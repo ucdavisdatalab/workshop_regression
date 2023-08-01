@@ -1,10 +1,10 @@
 ---
-title: YOUR WORKSHOP TITLE
-author: [YOUR NAME]
+title: A Practical Introduction to Regression Modeling
+author: Wesley Brooks
 date: "`r Sys.Date()`"
 
-github-repo: ucdavisdatalab/YOUR_REPO
-url: "https://ucdavisdatalab.github.io/YOUR_REPO/"
+github-repo: ucdavisdatalab/workshop_regression
+url: "https://ucdavisdatalab.github.io/workshop_regression/"
 
 lang: en-us
 
@@ -19,17 +19,45 @@ output:
           <li><a href="https://datalab.ucdavis.edu/">
             <img src="https://datalab.ucdavis.edu/wp-content/uploads/2019/07/datalab-logo-full-color-rgb-1.png" style="height: 100%; width: 100%; object-fit: contain" />
           </a></li>
-          <li><a href="./" style="font-size: 18px">YOUR WORKSHOP TITLE</a></li>
+          <li><a href="./" style="font-size: 18px">A Practical 
+Introduction to Regression Modeling</a></li>
         after: |
           <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
             <img alt="CC BY-SA 4.0" src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg" style="float: right; padding-right: 10px;" />
           </a>
         collapse: section
       sharing: no
-      view: https://github.com/ucdavisdatalab/YOUR_REPO/blob/master/%s
-      edit: https://github.com/ucdavisdatalab/YOUR_REPO/edit/master/%s
+      view: 
+https://github.com/ucdavisdatalab/workshop_regression/blob/master/%s
+      edit: 
+https://github.com/ucdavisdatalab/workshop_regression/edit/master/%s
 ---
 
 # Overview {-}
 
-YOUR DESCRIPTION, LEARNING GOALS, PREREQUISITES, ETC
+# Description
+Regression modeling — using input variables to predict or model the value
+of a response — is widely used in pretty much every field of research. Yet
+many graduate programs don't include formal training in statistical
+modeling, and the DataLab's office hours indicate widespread anxiety about
+using regression models in practice. This workshop is intended to help
+address that anxiety by teaching the fundamentals of using regression
+modeling in practice. The emphasis is on practice and intuition, with only
+a small amount of math. This workshop is open to all UC Davis graduate
+students and postdoctoral scholars. Attendance at both sessions is
+required. Instruction is in-person and seats are limited. A Zoom link
+(e.g., broadcast) will be available for those unable to attend who would 
+like to watch live.
+
+# Learning objectives
+After this workshop, learners will be able to:
+- Understand the differences between linear and generalized linear   
+regression models
+- Understand the difference between fixed effects and random effects in 
+regression models
+- Understand how continuous and categorical variables are handled   
+differently in regression modeling software
+- Implement the above-mentioned model types
+- Read and interpret regression summary tables
+- Do diagnostic checks on your regression models
+ 
