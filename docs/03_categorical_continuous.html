@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Practical Introduction to Regression Modeling in R - Categorical and Continous variables</title>
+<title>A Practical Introduction to Regression Modeling in R - Categorical features</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -74,7 +108,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_categorical_continuous.html"><span class="chapter-title">Categorical and Continous variables</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_categorical_continuous.html"><span class="chapter-title">Categorical features</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -117,12 +151,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Models</span></a>
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Regression</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Categorical and Continous variables</span></a>
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Categorical features</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -146,14 +180,24 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#factors" id="toc-factors" class="nav-link active" data-scroll-target="#factors">Factors</a>
+  <ul class="collapse">
+  <li><a href="#penguin-body-mass" id="toc-penguin-body-mass" class="nav-link" data-scroll-target="#penguin-body-mass">Penguin body mass</a></li>
+  <li><a href="#design-matrix" id="toc-design-matrix" class="nav-link" data-scroll-target="#design-matrix">Design matrix</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Categorical and Continous variables</span></h1>
+<h1 class="title"><span class="chapter-title">Categorical features</span></h1>
 </div>
 
 
@@ -168,8 +212,118 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<p>Categorical data are a common occurrence in applied regression modeling. These are any data that consist of categories rather than numbers. For instance, in aforestry experiment, you may thin the trees in some plots and do a prescribed burn in others. “Prescribed burn” and “thinning” aren’t numerical values, they are categories of treatment.</p>
+<p>There is a grey area where categories are ordered, like low, medium, high. We will talk about two ways to handle those.</p>
+<section id="factors" class="level2">
+<h2 class="anchored" data-anchor-id="factors">Factors</h2>
+<p>In R, categorical variables are called <em>factors</em>. Deep down in the machinery of a regression model, factor effects are handled the same way as for continuous features But to fully appreciate this, you have to understand that the factors are coded differently than continuous features. To begin, we should note that linear regression for factor variables is also a kind of scatterplot smoother. Let’s look at an example:</p>
+<section id="penguin-body-mass" class="level3">
+<h3 class="anchored" data-anchor-id="penguin-body-mass">Penguin body mass</h3>
+<p>The plot shows the mass of penguins measured at the Palmer Station LTER site in Antarctica, with the data coming from Allison Horst’s <a href="https://allisonhorst.github.io/palmerpenguins/"><code>palmerpenguins</code> package</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins_small) <span class="sc">+</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>species, <span class="at">y=</span>body_mass_g) <span class="sc">+</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Body mass of penguins by species"</span>) <span class="sc">+</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Mass (g)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/penguins-spp-example-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Look carefully at the x-axis and you’ll see that the coordinates are species names, not numbers. A line drawn to fit the points would imply that there is a specific order to the species and a specific spacing between them, and that there are some intermediate values where the mass would be somewhere between the known species. But none of those are true.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins_small) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>species, <span class="at">y=</span>body_mass_g) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">1800</span>, <span class="at">slope=</span><span class="dv">1200</span>) <span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Body mass of penguins by species with linear fit"</span>) <span class="sc">+</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Mass (g)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/penguin-factor-example-smoothed-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Clearly, we need to treat the species as categories, rather than as coordinates along a continuum. Looking at the summary of a regression model gives a clue as to how that works.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean mass by species:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean mass by species:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>penguin_means <span class="ot">=</span> <span class="fu">with</span>(penguins_small, <span class="fu">split</span>(body_mass_g, species)) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(mean, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(penguin_means)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Adelie Chinstrap    Gentoo 
+     3580      3660      5150 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">-----</span><span class="sc">\n\n</span><span class="st">lm summary:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+-----
+
+lm summary:</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>penguin_lm <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = body_mass_g ~ species, data = penguins_small)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-700.0 -147.5   65.0  230.0  550.0 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)        3580.0      177.7  20.151 1.28e-10 ***
+speciesChinstrap     80.0      251.2   0.318    0.756    
+speciesGentoo      1570.0      251.2   6.249 4.26e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 397.3 on 12 degrees of freedom
+Multiple R-squared:  0.805, Adjusted R-squared:  0.7725 
+F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
+</div>
+</div>
+<p>Notice that the fitted value of the <code>(Intercept)</code> is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the <code>Estimate</code> column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.</p>
+</section>
+<section id="design-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="design-matrix">Design matrix</h3>
+<p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regresson works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept) speciesChinstrap speciesGentoo
+1            1                0             0
+2            1                0             0
+3            1                0             0
+4            1                0             0
+5            1                0             0
+6            1                1             0
+7            1                1             0
+8            1                1             0
+9            1                1             0
+10           1                1             0
+11           1                0             1
+12           1                0             1
+13           1                0             1
+14           1                0             1
+15           1                0             1
+attr(,"assign")
+[1] 0 1 1
+attr(,"contrasts")
+attr(,"contrasts")$species
+[1] "contr.treatment"</code></pre>
+</div>
+</div>
+<p>Here, we have three terms: <code>(Intercept)</code>, <code>speciesChinstrap</code>, and <code>speciesGentoo</code>. So to calculate the mass that is estimated for row 160, we will add <code>1 * (Intercept) + 1 * speciesGentoo</code>. Since the effect <code>(Intercept)</code> is the average mass of the Adelie penguins, the effect <code>speciesGentoo</code> must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins. Why no term for <code>speciesAdelie</code>? It’s because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams, and end up with different effects but the same model fit. The computer has no way of deciding between those options, so it must avoid that situation.</p>
+<p>There are other possible ways to look at the species effects.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -408,7 +562,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./02_linear_model.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Linear Models</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Linear Regression</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
