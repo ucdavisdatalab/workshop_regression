@@ -1,1 +1,79 @@
-# Categorical and Continous variables
+# Categorical features
+Categorical data are a common occurrence in applied regression modeling. These are any data that consist of categories rather than numbers. For instance, in aforestry experiment, you may thin the trees in some plots and do a prescribed burn in others. "Prescribed burn" and "thinning" aren't numerical values, they are categories of treatment.
+
+There is a grey area where categories are ordered, like low, medium, high. We will talk about two ways to handle those.
+
+```{r hidden-load}
+#| echo: false
+#| include: false
+
+# import packages and get a small version of the penguins data
+library(palmerpenguins)
+library(ggplot2)
+library(dplyr)
+
+data(penguins)
+penguins_small = subset(penguins, !is.na(body_mass_g)) |>
+  split(f=~species) |>
+  lapply(function(x) subset(x, c(rep(TRUE, 5), rep(FALSE, nrow(x)-5)))) |>
+  bind_rows()
+```
+
+
+## Factors
+In R, categorical variables are called *factors*. Deep down in the machinery of a regression model, factor effects are handled the same way as for continuous features But to fully appreciate this, you have to understand that the factors are coded differently than continuous features. To begin, we should note that linear regression for factor variables is also a kind of scatterplot smoother. Let's look at an example:
+
+### Penguin body mass
+The plot shows the mass of penguins measured at the Palmer Station LTER site in Antarctica, with the data coming from Allison Horst's [`palmerpenguins` package](https://allisonhorst.github.io/palmerpenguins/).
+
+```{r penguins-spp-example}
+ggplot(penguins_small) + 
+  aes(x=species, y=body_mass_g) +
+  geom_point() +
+  ggtitle("Body mass of penguins by species") +
+  ylab("Mass (g)")
+```
+
+Look carefully at the x-axis and you'll see that the coordinates are species names, not numbers. A line drawn to fit the points would imply that there is a specific order to the species and a specific spacing between them, and that there are some intermediate values where the mass would be somewhere between the known species. But none of those are true. 
+
+```{r penguin-factor-example-smoothed}
+ggplot(penguins_small) +
+  aes(x=species, y=body_mass_g) +
+  geom_point() +
+  geom_abline(intercept=1800, slope=1200) +
+  ggtitle("Body mass of penguins by species with linear fit") +
+  ylab("Mass (g)")
+```
+
+Clearly, we need to treat the species as categories, rather than as coordinates along a continuum. Looking at the summary of a regression model gives a clue as to how that works.
+
+
+```{r penguin-model-summary}
+cat("Mean mass by species:\n")
+penguin_means = with(penguins_small, split(body_mass_g, species)) |>
+  sapply(mean, na.rm=TRUE) |>
+  round(2)
+print(penguin_means)
+
+cat("\n-----\n\nlm summary:\n")
+
+penguin_lm = lm(body_mass_g ~ species, data=penguins_small)
+summary(penguin_lm)
+```
+
+
+Notice that the fitted value of the `(Intercept)` is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the `Estimate` column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.
+
+### Design matrix
+The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The `model.matrix()` is the function that R uses internally to prepare data for an `lm()`, but we can call it ourselves. Remember that linear regresson works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.
+
+```{r penguin-model-matrix}
+model.matrix(penguin_lm)
+```
+
+Here, we have three terms: `(Intercept)`, `speciesChinstrap`, and `speciesGentoo`. So to calculate the mass that is estimated for row 160, we will add `1 * (Intercept) + 1 * speciesGentoo`. Since the effect `(Intercept)` is the average mass of the Adelie penguins, the effect `speciesGentoo` must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins.  Why no term for `speciesAdelie`? It's because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams, and end up with different effects but the same model fit. The computer has no way of deciding between those options, so it must avoid that situation.
+
+There are other possible ways to look at the species effects.
+
+
+

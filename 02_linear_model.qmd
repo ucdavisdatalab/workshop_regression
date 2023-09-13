@@ -1,1 +1,53 @@
-# Linear Models
+# Linear Regression
+Linear regression means drawing a straight line through a scatterplot of the data. That's easy to picture when there is a single feature, so let's look at an example.
+
+```{r simplest-linear-model}
+#| echo: false
+#| include: false
+
+# import data and create linear model
+data(cars)
+xx = seq(5, 25, length.out=5)
+m_cars = lm(dist~speed, data=cars)
+```
+
+```{r cars-plot}
+plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
+lines(xx, predict(m_cars, newdata=data.frame(speed=xx)))
+```
+
+## Residuals
+We have a special term for the difference between the fitted line and the true dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:
+
+```{r residual-example}
+
+```
+
+Obviously, you'd want your model of the response to fit perfectly, but that's generally not possible in the real world. So we have to accept the best fit that we can accomplish.
+
+## How the line is calculated
+
+A line is totally defined by its slope and intercept (intercept is where the line crosses the y-axis). The math of linear regression is just a way to calculate the slope and intercept of that line, and its intuition is also quite simple. It starts with the goal of minimizing the errors. There is an error for each dot, which is the difference between the line and the dot. To minimize the errors, we need to combine all those numbers into one (otherwise, you might have to worry about what effect a change in "A" has on "B", etc.) A natural way to combine many numbers into one is to add them together (or take the mean, which is adding together and then dividing by a constant. Since the constant doesn't change, we can leave it out or not without affecting the location of the minimum.) But there is a problem: errors can be negative (when the model fit is greater than the observed data.) A large negative error would be a good thing for "minimizing" error, but we don't want that because the error is large. So the errors are squared before adding them together. This is the origin of terms you might have heard, like the sum of squared errors or the mean squared error.
+
+We call each dot an "observation", and each one comes from one row of the spreadsheet. Each column of the spreadsheet is a "feature". One column is special because it is the column where errors are calculated. We call that column the "response". 
+
+Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s). ***Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms have come to be used interchangeably.
+
+## Multiple features
+
+Our exmple above has just a single feature to create a model for the response. It is ore commong to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods. So assume $p<n$.
+
+When there are multiple features, it is no longer possible to draw the relationship as a line trhough a scatterplot. But everything else works just the same. 
+
+### The `lm()` function in R
+The function to estimate a linear regression model in R is called `lm()`. We'll get quite familiar with the function during this workshop.
+
+
+
+## Assumptions of linear regression
+There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these:
+1. Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs. residual plot is evidence that the linearity assumption may be wrong. 
+2. Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.
+3. Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot. 
+4. The residuals must be independent of each other. You can't easily check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.)
+

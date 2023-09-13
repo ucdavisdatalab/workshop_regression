@@ -1,1 +1,31 @@
 # Introduction
+A regression model is a way to express a relationship between some response and one or more predictors. In order to estimate the model, you need to have measurements (aka observations) of the response and the predictors. We may use the following terms interchangeably:
+
+- response
+- response variable
+- dependent variable
+- output
+- output variable
+
+Likewise, the following may be used interchangeably:
+- predictor
+- predictor variable
+- independent variable
+- input
+- input variable
+
+
+## Outline
+These are the parts of the workshop:
+
+### First day
+1. Linear model
+2. Categorical vs. continuous features
+
+### Second day
+3. Generalized linear model
+4. Fixed and random effects
+
+
+
+

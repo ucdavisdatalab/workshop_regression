@@ -1,2 +1,37 @@
 # Generalized Linear Models
 
+```{r import}
+library(alone)
+
+data(survivalists)
+survivalists$podium = survivalists$result <= 3
+```
+
+## Generalized how?
+The linear regression model fits a straight line through scatterplot data. That's a very restrictive model. The generalized linear model begins to loosen some of the restrictions by allowing the response to have a distribution other than the normal distribution.
+
+## Distributions
+Statisticians have defined distributions to describe common kinds of randomness. In regression modeling, we are primarily concerned about the distribution of the response, rather than the features.  Linear regression assumes that the residuals have a distribution that we call "normal" or "Gaussian". But there are other important distributons that are very common in applied scientific research. I'll give you a brief description of the most important distributions here, but you should talk to a statistician and/or read deeply to understand the conditions that are assumed by the response family you've selected for a model.
+
+### Binomial
+A very common kind of response is one that puts each observation in a binary class. Examples include: whether a patient survived after receiving a medical treatment, whether a plant successfully germinated, and whether a a target mineral was found in a rock sample. We call this kind of response a binomial response, and it can refer to either a single outcome, or several independent outcomes that are grouped together. An example of the second case would be a measurement of how many students from a class of 30 improved their test score after a lesson.
+
+### Poisson
+This is another type of discrete data, which is used for a very common kind of count data. When a count is of independent events with no upper limit, it's often a Poisson response. For example: how many patients were admitted to the hospital in one day with COVID-19, or how many cars drive past an intersection in one hour. There are further considerations to check with a statistician - e.g., if the events aren't independent then you may have a negative binomial response.
+
+### Gamma
+A Gamma distribution is for continuous data, which is also true of the normal distribution. But the Gamma distribution can only have positive values (not including zero), and it has greater variability when the values are greater. 
+
+
+## The `glm()` function
+In R, you will usually estimate a generalized linear model by the `glm()` function. Its iterface is almost identical to the `lm()` function except it adds a parameter for the distribution, which is called `family`. So an example looks like this:
+
+```{r glm-example}
+my_glm = glm(podium ~ gender * age, data=survivalists)
+```
+
+### Summary of a GLM
+To view and interpret a GLM, use the `summary()` function, just as you did for a linear model. The interpretation is extremely similar, with only minor differences that aren't worth belaboring in this introduction.
+
+
+### Diagnostics for GLMs
