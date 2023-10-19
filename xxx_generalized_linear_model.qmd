@@ -24,10 +24,17 @@ A Gamma distribution is for continuous data, which is also true of the normal di
 
 
 ## The `glm()` function
-In R, you will usually estimate a generalized linear model by the `glm()` function. Its iterface is almost identical to the `lm()` function except it adds a parameter for the distribution, which is called `family`. So an example looks like this:
+In R, you will usually estimate a generalized linear model by the `glm()` function. Its interface is almost identical to the `lm()` function except it adds a parameter for the distribution, which is called `family`. So an example looks like this:
 
-```{r glm-example}
-my_glm = glm(podium ~ gender * age, data=survivalists)
+```{r logistic-regression-example}
+logistic_model = glm(podium ~ gender * age, data=survivalists, family='binomial')
+summary(logistic_model)
+```
+
+The summary reports that there is apparently no significant effect of gender, or age, nor any significant interaction between them for this data.
+
+```{r poisson-regression-example}
+
 ```
 
 ### Summary of a GLM
