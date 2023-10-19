@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./04_generalized_linear_model.html" rel="next">
+<link href="./05_fixed_random_effects.html" rel="next">
 <link href="./02_linear_model.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -161,11 +161,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
   </div>
 </li>
@@ -257,15 +252,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>   Adelie Chinstrap    Gentoo 
      3580      3660      5150 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">-----</span><span class="sc">\n\n</span><span class="st">lm summary:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
------
-
-lm summary:</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>penguin_lm <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now let’s see the estimated masses from a linear model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>penguin_lm <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -294,7 +285,7 @@ F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
 <h3 class="anchored" data-anchor-id="design-matrix">Design matrix</h3>
 <p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   (Intercept) speciesChinstrap speciesGentoo
 1            1                0             0
@@ -322,8 +313,8 @@ attr(,"contrasts")$species
 <p>Here, we have three terms: <code>(Intercept)</code>, <code>speciesChinstrap</code>, and <code>speciesGentoo</code>. So to calculate the mass that is estimated for row 12, we will add <code>1 * (Intercept) + 1 * speciesGentoo</code>. Since the effect <code>(Intercept)</code> is the average mass of the Adelie penguins, the effect <code>speciesGentoo</code> must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins. Why no term for <code>speciesAdelie</code>? It’s because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams and end up with the same model fit, despite different effects. The computer has no way of deciding between those options, because it just optimizing the model fit.</p>
 <p>There are other possible ways to look at the species effects. One of my favorites is using sum-to-zero contrasts, because then the intercept is the mean treatment effect, rather than being set to one specific baseline treatment effect. In any case, you will see that the estimated effect for each level is identical, despite the difference in</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>penguin_lm_stz <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small, <span class="at">contrasts=</span><span class="fu">list</span>(<span class="st">"species"</span><span class="ot">=</span>named.contr.sum))</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>penguin_lm_stz <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small, <span class="at">contrasts=</span><span class="fu">list</span>(<span class="st">"species"</span><span class="ot">=</span>named.contr.sum))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -345,7 +336,7 @@ Residual standard error: 397.3 on 12 degrees of freedom
 Multiple R-squared:  0.805, Adjusted R-squared:  0.7725 
 F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   (Intercept) speciesAdelie-mean speciesChinstrap-mean
 1            1                  1                     0
@@ -374,14 +365,14 @@ Gentoo             -1             -1</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare preductions between the models with different contrasts:</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">species=</span><span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>))</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare preductions between the models with different contrasts:</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">species=</span><span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   1    2    3 
 3580 3660 5150 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm_stz, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm_stz, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   1    2    3 
 3580 3660 5150 </code></pre>
@@ -393,8 +384,8 @@ Gentoo             -1             -1</code></pre>
 <h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <p>Here is an example of a Poisson regression model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>model_spray <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays, <span class="at">family=</span><span class="st">'poisson'</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model_spray <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays, <span class="at">family=</span><span class="st">'poisson'</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -419,7 +410,7 @@ AIC: 376.59
 
 Number of Fisher Scoring iterations: 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -678,8 +669,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./04_generalized_linear_model.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Generalized Linear Models</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./05_fixed_random_effects.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-title">Fixed and Random Effects</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -163,11 +163,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
   </div>
 </li>
@@ -287,7 +282,13 @@ F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</code></pre>
 </section>
 <section id="assumptions-of-linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="assumptions-of-linear-regression">Assumptions of linear regression</h2>
-<p>There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these: 1. Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs.&nbsp;residual plot is evidence that the linearity assumption may be wrong. 2. Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line. 3. Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot. 4. The residuals must be independent of each other. You can’t actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.</p>
+<p>There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these:</p>
+<ol type="1">
+<li><p>Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs.&nbsp;residual plot is evidence that the linearity assumption may be wrong.</p></li>
+<li><p>Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.</p></li>
+<li><p>Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot.</p></li>
+<li><p>The residuals must be independent of each other. You can’t actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.</p></li>
+</ol>
 <p>Let’s check the assumptions on the distance-to-stop model:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
@@ -340,13 +341,13 @@ F-statistic: 117.2 on 1 and 48 DF,  p-value: 1.773e-14</code></pre>
 <section id="generalized-linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="generalized-linear-regression">Generalized linear regression</h2>
 <p>We won’t put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor.</p>
-<ol type="1">
-<li>Response distribution is different. As a result:</li>
-</ol>
+<ul>
+<li>Response distribution is different. As a result:
 <ul>
 <li>Response variance is no longer assumed equal (when variance depends on mean).</li>
 <li>The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what’s called a “Link Function”).</li>
 <li>Thus, diagnostics have to change.</li>
+</ul></li>
 </ul>
 </section>
 <section id="examples" class="level2">
