@@ -189,6 +189,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#penguin-body-mass" id="toc-penguin-body-mass" class="nav-link" data-scroll-target="#penguin-body-mass">Penguin body mass</a></li>
   <li><a href="#design-matrix" id="toc-design-matrix" class="nav-link" data-scroll-target="#design-matrix">Design matrix</a></li>
   </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   </ul>
 </nav>
     </div>
@@ -291,7 +292,7 @@ F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
 </section>
 <section id="design-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="design-matrix">Design matrix</h3>
-<p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regresson works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.</p>
+<p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -318,11 +319,122 @@ attr(,"contrasts")$species
 [1] "contr.treatment"</code></pre>
 </div>
 </div>
-<p>Here, we have three terms: <code>(Intercept)</code>, <code>speciesChinstrap</code>, and <code>speciesGentoo</code>. So to calculate the mass that is estimated for row 160, we will add <code>1 * (Intercept) + 1 * speciesGentoo</code>. Since the effect <code>(Intercept)</code> is the average mass of the Adelie penguins, the effect <code>speciesGentoo</code> must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins. Why no term for <code>speciesAdelie</code>? It’s because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams, and end up with different effects but the same model fit. The computer has no way of deciding between those options, so it must avoid that situation.</p>
-<p>There are other possible ways to look at the species effects.</p>
+<p>Here, we have three terms: <code>(Intercept)</code>, <code>speciesChinstrap</code>, and <code>speciesGentoo</code>. So to calculate the mass that is estimated for row 12, we will add <code>1 * (Intercept) + 1 * speciesGentoo</code>. Since the effect <code>(Intercept)</code> is the average mass of the Adelie penguins, the effect <code>speciesGentoo</code> must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins. Why no term for <code>speciesAdelie</code>? It’s because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams and end up with the same model fit, despite different effects. The computer has no way of deciding between those options, because it just optimizing the model fit.</p>
+<p>There are other possible ways to look at the species effects. One of my favorites is using sum-to-zero contrasts, because then the intercept is the mean treatment effect, rather than being set to one specific baseline treatment effect. In any case, you will see that the estimated effect for each level is identical, despite the difference in</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>penguin_lm_stz <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small, <span class="at">contrasts=</span><span class="fu">list</span>(<span class="st">"species"</span><span class="ot">=</span>named.contr.sum))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = body_mass_g ~ species, data = penguins_small, contrasts = list(species = named.contr.sum))
 
+Residuals:
+   Min     1Q Median     3Q    Max 
+-700.0 -147.5   65.0  230.0  550.0 
 
+Coefficients:
+                      Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)             4130.0      102.6  40.265 3.56e-14 ***
+speciesAdelie-mean      -550.0      145.1  -3.792  0.00257 ** 
+speciesChinstrap-mean   -470.0      145.1  -3.240  0.00709 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 397.3 on 12 degrees of freedom
+Multiple R-squared:  0.805, Adjusted R-squared:  0.7725 
+F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   (Intercept) speciesAdelie-mean speciesChinstrap-mean
+1            1                  1                     0
+2            1                  1                     0
+3            1                  1                     0
+4            1                  1                     0
+5            1                  1                     0
+6            1                  0                     1
+7            1                  0                     1
+8            1                  0                     1
+9            1                  0                     1
+10           1                  0                     1
+11           1                 -1                    -1
+12           1                 -1                    -1
+13           1                 -1                    -1
+14           1                 -1                    -1
+15           1                 -1                    -1
+attr(,"assign")
+[1] 0 1 1
+attr(,"contrasts")
+attr(,"contrasts")$species
+          Adelie-mean Chinstrap-mean
+Adelie              1              0
+Chinstrap           0              1
+Gentoo             -1             -1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare preductions between the models with different contrasts:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">species=</span><span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   1    2    3 
+3580 3660 5150 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm_stz, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   1    2    3 
+3580 3660 5150 </code></pre>
+</div>
+</div>
 </section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<p>Here is an example of a Poisson regression model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>model_spray <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays, <span class="at">family=</span><span class="st">'poisson'</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = count ~ spray, family = "poisson", data = InsectSprays)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  2.67415    0.07581  35.274  &lt; 2e-16 ***
+sprayB       0.05588    0.10574   0.528    0.597    
+sprayC      -1.94018    0.21389  -9.071  &lt; 2e-16 ***
+sprayD      -1.08152    0.15065  -7.179 7.03e-13 ***
+sprayE      -1.42139    0.17192  -8.268  &lt; 2e-16 ***
+sprayF       0.13926    0.10367   1.343    0.179    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 409.041  on 71  degrees of freedom
+Residual deviance:  98.329  on 66  degrees of freedom
+AIC: 376.59
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

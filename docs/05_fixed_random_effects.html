@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -62,6 +96,8 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -146,7 +182,24 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#fixed-effects" id="toc-fixed-effects" class="nav-link active" data-scroll-target="#fixed-effects">Fixed effects</a></li>
+  <li><a href="#random-effects" id="toc-random-effects" class="nav-link" data-scroll-target="#random-effects">Random effects</a></li>
+  <li><a href="#random-effects-1" id="toc-random-effects-1" class="nav-link" data-scroll-target="#random-effects-1">Random effects</a></li>
+  <li><a href="#using-random-effects-in-regression" id="toc-using-random-effects-in-regression" class="nav-link" data-scroll-target="#using-random-effects-in-regression">Using random effects in regression</a>
+  <ul class="collapse">
+  <li><a href="#random-intercepts-and-slopes" id="toc-random-intercepts-and-slopes" class="nav-link" data-scroll-target="#random-intercepts-and-slopes">Random intercepts and slopes</a></li>
+  </ul></li>
+  <li><a href="#when-to-use-fixed-vs-random-effects" id="toc-when-to-use-fixed-vs-random-effects" class="nav-link" data-scroll-target="#when-to-use-fixed-vs-random-effects">When to use fixed vs random effects</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples:</a>
+  <ul class="collapse">
+  <li><a href="#orange-trees" id="toc-orange-trees" class="nav-link" data-scroll-target="#orange-trees">Orange trees</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -168,8 +221,149 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<p>We have looked at several examples of regression models. For the examples, I have intentionally chosen data with a pretty simple structure: all of the observations are independent, with differences in the outcomes attributed to either the treatment effects or to random noise.</p>
+<section id="fixed-effects" class="level2">
+<h2 class="anchored" data-anchor-id="fixed-effects">Fixed effects</h2>
+<p>The effects we’ve seen so far are often called “fixed effects”. That’s because the treatment is expected to have the same effect if the experiment were repeated. That fixed value is in contrast to “random effects”, which are taken from a random distribution and are expected to be different in a hypothetical repetition of the experiment.</p>
+</section>
+<section id="random-effects" class="level2">
+<h2 class="anchored" data-anchor-id="random-effects">Random effects</h2>
+<p>Real-world science often sees data grouped according to some known structure of the study. For instance, in an agricultural experiment, the yield of plants from the same field is generally more alike than plants from different fields, even fields that received the same treatment. Why? Maybe the soil was generally better quality in one field, or one got more rain than the other, or the treatments weren’t applied perfectly consistently between fields.</p>
+<p>In order to account for factors like these, agricultural experiments often divide a field into plots, and apply different treatments in each plot. In that case, the yields from the same plot are more alike than from other plots, even on the same field. But they are generally more alike within the same field than plots from different fields. This is an example of hierarchical data: there are several individual measurements of yield from plants in each plot. We say that the measurements are nested within the plots, and meanwhile the plots are nested within fields.</p>
+</section>
+<section id="random-effects-1" class="level2">
+<h2 class="anchored" data-anchor-id="random-effects-1">Random effects</h2>
+<p>Random effects are a way to account for variation in data that arises due to grouping or clustering of observations. They are used in regression models when there is a hierarchy or structure in the data, and the observations within each group are expected to be correlated.</p>
+<p>For example, in a study involving students from different schools, random effects can be used to capture the inherent differences between schools, which may affect the dependent variable (e.g., test scores). Random effects are modeled as deviations from the overall population-level effects.</p>
+</section>
+<section id="using-random-effects-in-regression" class="level2">
+<h2 class="anchored" data-anchor-id="using-random-effects-in-regression">Using random effects in regression</h2>
+<p>There are several R packages that implement random effects in regression. <code>lme4</code> is the most-used and <code>brms</code> is the Bayesian equivalent (which also offers some great features that aren’t available in <code>lme4</code>.) Both of them write the model in just about the same way as the <code>lm()</code> and <code>glm()</code> functions that you’ve already seen. The only difference is that the random effects need to be specified using a special notation: they are written as two parts wrapped in parentheses. The first part indicates the effect that changes with the grouping factor, and the second part indicates what variable is the grouping factor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>re_model <span class="ot">=</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Subject), <span class="at">data=</span>sleepstudy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict the fitted values from the mixed-effects model</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sleepstudy<span class="sc">$</span>fitted_reaction <span class="ot">&lt;-</span> <span class="fu">predict</span>(re_model)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatterplot of fitted reaction times against Days</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sleepstudy) <span class="sc">+</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> fitted_reaction, <span class="at">color =</span> Subject) <span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># geom_point() +</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Fitted Reaction Time vs. Days by Subject"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Days"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Fitted Reaction Time (ms)"</span>) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sleepstudy, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>Days, <span class="at">y=</span>Reaction, <span class="at">color=</span>Subject))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/plot-random-intercept-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="random-intercepts-and-slopes" class="level3">
+<h3 class="anchored" data-anchor-id="random-intercepts-and-slopes">Random intercepts and slopes</h3>
+<p>The most common kind of random effect is a random intercept. That means the effect of a grouping level is a consistent adjustment (increase or decrease) to the response. But random effects can be more complicated, such random slopes - where the effect of a continuous variable changes according to the grouping variable. Here’s an example using the sleep study data: the difference is that now the random effect of subject is not only that each subject was has somewhat quicker or slower reflexes that change by the same amount each day. Instead, each subject has somewhat quicker or slower reflexes that change by a personally unique amount each day (meanwhile, we have still estimated the fixed effect of days - which is the amount that an average person’s reaction time slowed down with each day of sleep deprivation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>random_slope_model <span class="ot">=</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Days<span class="sc">|</span>Subject), <span class="at">data=</span>sleepstudy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Looking at the plot of random effects, we see that the people with the quickest reactions also were less affected by sleep deprivation (lowest lines have the flattest slopes), and the people with the slowest reactions also were most affected by sleep deprivation (highest lines have the steepest slopes.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict the fitted values from the mixed-effects model</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sleepstudy<span class="sc">$</span>random_slope_fitted <span class="ot">&lt;-</span> <span class="fu">predict</span>(random_slope_model)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatterplot of fitted reaction times against Days</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sleepstudy) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> random_slope_fitted, <span class="at">color =</span> Subject) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># geom_point() +</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Fitted Reaction Time vs. Days by Subject"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Days"</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Fitted Reaction Time (ms)"</span>) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sleepstudy, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>Days, <span class="at">y=</span>Reaction, <span class="at">color=</span>Subject))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/plot-random-slopes-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This is also seen in the model summary, where there is a (slightly) positive correlation between the random slope and random intercept.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(random_slope_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (1 + Days | Subject)
+   Data: sleepstudy
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.10   24.741       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="when-to-use-fixed-vs-random-effects" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-fixed-vs-random-effects">When to use fixed vs random effects</h2>
+<p>There isn’t a single, definitive check that will tell you when to use random or fixed effects. I have come to think of random effects as a form of “partial pooling” - a way to do something between te extremes of either treating each observation as independent, or fully pooling all observations of each group by only using group means as data. With random effects, the amount of pooling is adaptive: where the differences between groups are large compared to the difference between observations within a group, then the random effect for group will have a big influence. But where the differences between individual observations is large compared to</p>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples:</h2>
+<section id="orange-trees" class="level3">
+<h3 class="anchored" data-anchor-id="orange-trees">Orange trees</h3>
+<p>For this example, we will look at the growth of orange trees. The data is in the built-in dataset <code>Orange</code>, which you can import via <span class="math inline">\(data(Orange)\)</span>. There are three columns: <code>Tree</code>, which is an ID of which orange tree is being measured; <code>age</code>, which is the number of days since Deember 31, 1969; and <code>circumference</code>, which is the circumference of the tree’s trunk (in mm). There are five trees with seven observations each, so 35 rows of data. First, plot the data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the orange tree data</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Orange) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>age, <span class="at">y=</span>circumference, <span class="at">color=</span>Tree) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/orange-raw-plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This looks like (fairly) linear growth with the same intercept (all the trees appear to have circumference zero at day zero) but slightly different growth rates. So let’s use a random slope model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model_orange <span class="ot">=</span> <span class="fu">lmer</span>(circumference <span class="sc">~</span> (age <span class="sc">-</span> <span class="dv">1</span> <span class="sc">|</span> Tree), <span class="at">data=</span>Orange)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_orange)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: circumference ~ (age - 1 | Tree)
+   Data: Orange
+
+REML criterion at convergence: 289.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.9824 -0.5130 -0.0082  0.7997  1.6243 
+
+Random effects:
+ Groups   Name Variance  Std.Dev.
+ Tree     age    0.01172  0.1082 
+ Residual      100.93833 10.0468 
+Number of obs: 35, groups:  Tree, 5
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)   17.913      3.642   4.918</code></pre>
+</div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

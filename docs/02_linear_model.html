@@ -187,12 +187,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#residuals" id="toc-residuals" class="nav-link active" data-scroll-target="#residuals">Residuals</a></li>
-  <li><a href="#how-the-line-is-calculated" id="toc-how-the-line-is-calculated" class="nav-link" data-scroll-target="#how-the-line-is-calculated">How the line is calculated</a></li>
-  <li><a href="#multiple-features" id="toc-multiple-features" class="nav-link" data-scroll-target="#multiple-features">Multiple features</a>
+  <li><a href="#how-the-line-is-calculated" id="toc-how-the-line-is-calculated" class="nav-link" data-scroll-target="#how-the-line-is-calculated">How the line is calculated</a>
   <ul class="collapse">
   <li><a href="#the-lm-function-in-r" id="toc-the-lm-function-in-r" class="nav-link" data-scroll-target="#the-lm-function-in-r">The <code>lm()</code> function in R</a></li>
   </ul></li>
   <li><a href="#assumptions-of-linear-regression" id="toc-assumptions-of-linear-regression" class="nav-link" data-scroll-target="#assumptions-of-linear-regression">Assumptions of linear regression</a></li>
+  <li><a href="#multiple-features" id="toc-multiple-features" class="nav-link" data-scroll-target="#multiple-features">Multiple features</a>
+  <ul class="collapse">
+  <li><a href="#which-features-to-include" id="toc-which-features-to-include" class="nav-link" data-scroll-target="#which-features-to-include">Which features to include?</a></li>
+  </ul></li>
+  <li><a href="#generalized-linear-regression" id="toc-generalized-linear-regression" class="nav-link" data-scroll-target="#generalized-linear-regression">Generalized linear regression</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#seatbelts-save-lives" id="toc-seatbelts-save-lives" class="nav-link" data-scroll-target="#seatbelts-save-lives">Seatbelts save lives</a></li>
+  <li><a href="#sex-of-penguins" id="toc-sex-of-penguins" class="nav-link" data-scroll-target="#sex-of-penguins">Sex of penguins</a></li>
+  <li><a href="#bill-length-of-penguins" id="toc-bill-length-of-penguins" class="nav-link" data-scroll-target="#bill-length-of-penguins">Bill length of penguins</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -219,7 +229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Linear regression means drawing a straight line through a scatterplot of the data. That’s easy to picture when there is a single feature, so let’s look at an example.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cars, <span class="at">xlab=</span><span class="st">"Speed (mph)"</span>, <span class="at">ylab=</span><span class="st">"Distance to stop (ft)"</span>, <span class="at">bty=</span><span class="st">'n'</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(xx, <span class="fu">predict</span>(m_cars, <span class="at">newdata=</span><span class="fu">data.frame</span>(<span class="at">speed=</span>xx)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="sc">-</span><span class="fl">17.6</span>, <span class="fl">3.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="02_linear_model_files/figure-html/cars-plot-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -227,28 +237,234 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="residuals" class="level2">
 <h2 class="anchored" data-anchor-id="residuals">Residuals</h2>
 <p>We have a special term for the difference between the fitted line and the true dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:</p>
-<p>Obviously, you’d want your model of the response to fit perfectly, but that’s generally not possible in the real world. So we have to accept the best fit that we can accomplish.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="02_linear_model_files/figure-html/residual-example-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Obviously, you’d want your model of the response to fit perfectly but there’s no line that would go through all the points.</p>
 </section>
 <section id="how-the-line-is-calculated" class="level2">
 <h2 class="anchored" data-anchor-id="how-the-line-is-calculated">How the line is calculated</h2>
 <p>A line is totally defined by its slope and intercept (intercept is where the line crosses the y-axis). The math of linear regression is just a way to calculate the slope and intercept of that line, and its intuition is also quite simple. It starts with the goal of minimizing the errors. There is an error for each dot, which is the difference between the line and the dot. To minimize the errors, we need to combine all those numbers into one (otherwise, you might have to worry about what effect a change in “A” has on “B”, etc.) A natural way to combine many numbers into one is to add them together (or take the mean, which is adding together and then dividing by a constant. Since the constant doesn’t change, we can leave it out or not without affecting the location of the minimum.) But there is a problem: errors can be negative (when the model fit is greater than the observed data.) A large negative error would be a good thing for “minimizing” error, but we don’t want that because the error is large. So the errors are squared before adding them together. This is the origin of terms you might have heard, like the sum of squared errors or the mean squared error.</p>
 <p>We call each dot an “observation”, and each one comes from one row of the spreadsheet. Each column of the spreadsheet is a “feature”. One column is special because it is the column where errors are calculated. We call that column the “response”.</p>
-<p>Let’s say what we mean by a “linear model”. This is an equation that describes some output variable as a linear function of some input variable(s). ***Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms have come to be used interchangeably.</p>
-</section>
-<section id="multiple-features" class="level2">
-<h2 class="anchored" data-anchor-id="multiple-features">Multiple features</h2>
-<p>Our exmple above has just a single feature to create a model for the response. It is ore commong to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods. So assume <span class="math inline">\(p&lt;n\)</span>.</p>
-<p>When there are multiple features, it is no longer possible to draw the relationship as a line trhough a scatterplot. But everything else works just the same.</p>
+<p>Let’s say what we mean by a “linear model”. This is an equation that describes some output variable as a linear function of some input variable(s).</p>
+<p>Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms have come to be used interchangeably.</p>
 <section id="the-lm-function-in-r" class="level3">
 <h3 class="anchored" data-anchor-id="the-lm-function-in-r">The <code>lm()</code> function in R</h3>
-<p>The function to estimate a linear regression model in R is called <code>lm()</code>. We’ll get quite familiar with the function during this workshop.</p>
+<p>The function to estimate a linear regression model in R is called <code>lm()</code>. We’ll get quite familiar with the function during this workshop. Now let’s use it to estimate the regression line in our distance-to-stop example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stop_model <span class="ot">=</span> <span class="fu">lm</span>(dist <span class="sc">~</span> speed, <span class="at">data=</span>cars)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(stop_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = dist ~ speed, data = cars)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-29.069  -9.525  -2.272   9.215  43.201 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+speed         3.9324     0.4155   9.464 1.49e-12 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 15.38 on 48 degrees of freedom
+Multiple R-squared:  0.6511,    Adjusted R-squared:  0.6438 
+F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</code></pre>
+</div>
+</div>
+<p>There is a bit of unique R code in the call to <code>lm()</code>: it uses R’s formula syntax. A formula in R has the response variable on the left of a tilde (<code>~</code>) and predictors on the right. You may see it in other contexts but its most common use is to specify the variables of a regression formula. Having used the <code>lm()</code> function to estimate the regression model, we then use the <code>summary()</code> function to inspect the model fit. Let’s dig into the <code>summary()</code> output.</p>
+<p>The important parts of the <code>summary()</code> results are the <code>Coefficients:</code> and below. The first two parts of the <code>summary()</code> result (<code>Call:</code> and <code>Residuals:</code>) are usually not very interesting. At this point, you probably recognize that the <code>Call:</code> is repeating back the function call that created the model, and the <code>Residuals:</code> section tells you about the size of the residuals.</p>
+<p>Starting with <code>Coefficients:</code> we begin to learn about the model fit. You remember that the linear model fits a straight line to the data. And you might also know that you can describe a line by its slope and intercept, as in <span class="math inline">\(y = ax + b\)</span>. In that equation, <span class="math inline">\(b\)</span> is the intercept and <span class="math inline">\(a\)</span> is the slope, also known as the coefficient of <span class="math inline">\(x\)</span>. The coefficient of <code>speed</code> functions as the slope of our line, and it is listed in the <code>Estimate</code> column. As you might guess, the intercept of the estimated line is listed as under the <code>Estimate</code> column and the <code>(Intercept)</code> row.</p>
+<p>The <code>Std. Error</code> column is an estimate of uncertainty in the coefficient estimates. The <code>t value</code> column is just the <code>Estimate</code> divided by the <code>Std. Error</code>, and it is used to calculate the <code>Pr(&gt;|t|)</code> column (better known as the coefficient p-value.)</p>
+<p>The remaining information (<code>Residual standard error</code>, <code>degrees of freedom</code>, <code>Multiple R-squared</code>, <code>Adjusted R-squared</code>, <code>F-statistic</code>, and <code>p-value</code>) is beyond this introductory workshop. Just know that the p-value reported here is almost useless.</p>
+<p>In contrast, the coefficient p-values, reported as <code>Pr(&gt;|t|)</code> in the <code>Coefficients:</code> table, are often the main focus of analysis. Making use of these p-values and interpreting the asterisks as indicators of statistical significance depends on proper use of the <code>lm()</code> function. In particular, you must decide which variables to use before fitting a model, and you can only try once - otherwise, the p-values will be biased by peeking at the result before doing the test.</p>
 </section>
 </section>
 <section id="assumptions-of-linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="assumptions-of-linear-regression">Assumptions of linear regression</h2>
-<p>There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these: 1. Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs.&nbsp;residual plot is evidence that the linearity assumption may be wrong. 2. Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line. 3. Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot. 4. The residuals must be independent of each other. You can’t easily check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.)</p>
+<p>There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these: 1. Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs.&nbsp;residual plot is evidence that the linearity assumption may be wrong. 2. Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line. 3. Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot. 4. The residuals must be independent of each other. You can’t actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.</p>
+<p>Let’s check the assumptions on the distance-to-stop model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(stop_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="02_linear_model_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Here, there is a slight fan-shaed pattern in the Residual v. Fitted plot, and an increasing trend in the Scale-Location plot. Both of these indicate that the variances of the residuals aren’t equal. You can also see the Q-Q plot deviate from the dotted diagonal line, which indicates that the residuals may not be all from an identical normal distribution. The deviations from ideal are pretty minor, and you could probably rely on this model to predict new data. But a more correct model is possible by applying a transformation that mutes the variability of the largest values (often that’s a log transformation, but here a square-root transformation would be ideal.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>stop_model_sqrt <span class="ot">=</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(dist) <span class="sc">~</span> speed, <span class="at">data=</span>cars)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(stop_model_sqrt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sqrt(dist) ~ speed, data = cars)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.0684 -0.6983 -0.1799  0.5909  3.1534 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  1.27705    0.48444   2.636   0.0113 *  
+speed        0.32241    0.02978  10.825 1.77e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.102 on 48 degrees of freedom
+Multiple R-squared:  0.7094,    Adjusted R-squared:  0.7034 
+F-statistic: 117.2 on 1 and 48 DF,  p-value: 1.773e-14</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(stop_model_sqrt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="02_linear_model_files/figure-html/sqrt-transformation-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="multiple-features" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-features">Multiple features</h2>
+<p>Our example above has just a single feature to create a model for the response. It is more common to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods. So assume <span class="math inline">\(p&lt;n\)</span>.</p>
+<p>When there are multiple features, it is no longer possible to draw the relationship as a line through a scatterplot. But everything else works just the same.</p>
+<section id="which-features-to-include" class="level3">
+<h3 class="anchored" data-anchor-id="which-features-to-include">Which features to include?</h3>
+<p>A common question is how to decide which features to include in a model. A definitive answer is probably impossible, since well-one model selection (as it is called) is the product of experience and expertise with the system that you’re modeling. In the simplest terms, the correct features for your model are the ones that are relevant to your study. They should be considered carefully before trying to estimate the model, and of course you have to keep in mind assumption (1) for linear models: “The actual relationship between the features and the response is linear.” This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.</p>
+<p>There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data.</p>
+</section>
+</section>
+<section id="generalized-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="generalized-linear-regression">Generalized linear regression</h2>
+<p>We won’t put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor.</p>
+<ol type="1">
+<li>Response distribution is different. As a result:</li>
+</ol>
+<ul>
+<li>Response variance is no longer assumed equal (when variance depends on mean).</li>
+<li>The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what’s called a “Link Function”).</li>
+<li>Thus, diagnostics have to change.</li>
+</ul>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="seatbelts-save-lives" class="level3">
+<h3 class="anchored" data-anchor-id="seatbelts-save-lives">Seatbelts save lives</h3>
+<p>The UK introduced a law to require seatbelts in January 1983. We have a dataset of the monthly driver fatalities in the UK from 1969 through 1984, and want to estimate what effect the seatbelt law had on driver fatalities. The <code>Seatbelts</code> data set is built into R and can be imported via <code>data("Seatbelts")</code>. The relevant columns are <code>DriversKilled</code>, <code>kms</code>, <code>PetrolPrice</code>, and <code>law</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Seatbelts"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>seatbelt_model <span class="ot">=</span> <span class="fu">lm</span>(DriversKilled <span class="sc">~</span> kms <span class="sc">+</span> PetrolPrice <span class="sc">+</span> law, <span class="at">data =</span> Seatbelts)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(seatbelt_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = DriversKilled ~ kms + PetrolPrice + law, data = Seatbelts)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-50.69 -17.29  -4.05  14.33  60.71 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  2.015e+02  1.626e+01  12.393  &lt; 2e-16 ***
+kms         -1.223e-03  6.657e-04  -1.838 0.067676 .  
+PetrolPrice -5.683e+02  1.521e+02  -3.738 0.000246 ***
+law         -1.189e+01  6.026e+00  -1.973 0.049955 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 22.87 on 188 degrees of freedom
+Multiple R-squared:  0.201, Adjusted R-squared:  0.1882 
+F-statistic: 15.76 on 3 and 188 DF,  p-value: 3.478e-09</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(seatbelt_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="02_linear_model_files/figure-html/seatbelt-model-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="sex-of-penguins" class="level3">
+<h3 class="anchored" data-anchor-id="sex-of-penguins">Sex of penguins</h3>
+<p>Here is an example of a logistic regression model, where we use the species and body mass of penguins to estimate their sex. The data are in the <code>palmerpenguins</code> package, which was created by Allison Horst to compile data on penguins of three species taht were measured at the Palmer Long Term Ecological Research Station in Antarctica.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the palmerpenguins package and attach the data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(penguins)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>m_penguin_sex <span class="ot">=</span> <span class="fu">glm</span>(sex <span class="sc">~</span> species <span class="sc">+</span> body_mass_g, <span class="at">data=</span>penguins, <span class="at">family=</span><span class="st">'binomial'</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_penguin_sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = sex ~ species + body_mass_g, family = "binomial", 
+    data = penguins)
+
+Coefficients:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)      -2.713e+01  2.998e+00  -9.049   &lt;2e-16 ***
+speciesChinstrap -2.559e-01  4.293e-01  -0.596    0.551    
+speciesGentoo    -1.018e+01  1.195e+00  -8.520   &lt;2e-16 ***
+body_mass_g       7.373e-03  8.141e-04   9.056   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 461.61  on 332  degrees of freedom
+Residual deviance: 212.09  on 329  degrees of freedom
+  (11 observations deleted due to missingness)
+AIC: 220.09
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m_penguin_sex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="02_linear_model_files/figure-html/penguin-sex-model-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="bill-length-of-penguins" class="level3">
+<h3 class="anchored" data-anchor-id="bill-length-of-penguins">Bill length of penguins</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m_penguin_bill <span class="ot">=</span> <span class="fu">lm</span>(bill_length_mm <span class="sc">~</span> flipper_length_mm <span class="sc">+</span> species, <span class="at">data=</span>penguins)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m_penguin_bill)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = bill_length_mm ~ flipper_length_mm + species, data = penguins)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-6.662 -1.746  0.028  1.825 12.354 
+
+Coefficients:
+                  Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       -2.05859    4.03855  -0.510    0.611    
+flipper_length_mm  0.21505    0.02123  10.129  &lt; 2e-16 ***
+speciesChinstrap   8.78010    0.39912  21.998  &lt; 2e-16 ***
+speciesGentoo      2.85689    0.65861   4.338  1.9e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.596 on 338 degrees of freedom
+  (2 observations deleted due to missingness)
+Multiple R-squared:  0.7758,    Adjusted R-squared:  0.7739 
+F-statistic:   390 on 3 and 338 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="fu">matrix</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m_penguin_bill)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="02_linear_model_files/figure-html/penguin-bill-model-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -247,10 +247,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="the-glm-function" class="level2">
 <h2 class="anchored" data-anchor-id="the-glm-function">The <code>glm()</code> function</h2>
-<p>In R, you will usually estimate a generalized linear model by the <code>glm()</code> function. Its iterface is almost identical to the <code>lm()</code> function except it adds a parameter for the distribution, which is called <code>family</code>. So an example looks like this:</p>
+<p>In R, you will usually estimate a generalized linear model by the <code>glm()</code> function. Its interface is almost identical to the <code>lm()</code> function except it adds a parameter for the distribution, which is called <code>family</code>. So an example looks like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>my_glm <span class="ot">=</span> <span class="fu">glm</span>(podium <span class="sc">~</span> gender <span class="sc">*</span> age, <span class="at">data=</span>survivalists)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>logistic_model <span class="ot">=</span> <span class="fu">glm</span>(podium <span class="sc">~</span> gender <span class="sc">*</span> age, <span class="at">data=</span>survivalists, <span class="at">family=</span><span class="st">'binomial'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logistic_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = podium ~ gender * age, family = "binomial", data = survivalists)
+
+Coefficients:
+                Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)    -0.641003   2.322898  -0.276    0.783
+genderMale     -0.817204   2.558817  -0.319    0.749
+age             0.004875   0.055841   0.087    0.930
+genderMale:age  0.010940   0.062325   0.176    0.861
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 129.96  on 103  degrees of freedom
+Residual deviance: 128.90  on 100  degrees of freedom
+  (10 observations deleted due to missingness)
+AIC: 136.9
+
+Number of Fisher Scoring iterations: 4</code></pre>
 </div>
+</div>
+<p>The summary reports that there is apparently no significant effect of gender, or age, nor any significant interaction between them for this data.</p>
 <section id="summary-of-a-glm" class="level3">
 <h3 class="anchored" data-anchor-id="summary-of-a-glm">Summary of a GLM</h3>
 <p>To view and interpret a GLM, use the <code>summary()</code> function, just as you did for a linear model. The interpretation is extremely similar, with only minor differences that aren’t worth belaboring in this introduction.</p>
