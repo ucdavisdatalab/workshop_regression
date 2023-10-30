@@ -106,13 +106,3 @@ predict(penguin_lm, pred_df)
 predict(penguin_lm_stz, pred_df)
 ```
 
-
-## Examples
-
-Here is an example of a Poisson regression model. 
-
-```{r poisson-regression-insect-sprays}
-model_spray = glm(count ~ spray, data=InsectSprays, family='poisson')
-summary(model_spray)
-plot(model_spray)
-```

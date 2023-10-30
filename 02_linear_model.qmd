@@ -111,13 +111,6 @@ There are data-driven ways of doing model selection, most of which can be summar
 
 
 
-## Generalized linear regression
-We won't put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor. 
-
-- Response distribution is different. As a result:
-  - Response variance is no longer assumed equal (when variance depends on mean).
-  - The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what's called a "Link Function").
-  - Thus, diagnostics have to change.
 
 
 ## Examples
@@ -134,19 +127,6 @@ plot(seatbelt_model)
 ```
 
 
-### Sex of penguins
-Here is an example of a logistic regression model, where we use the species and body mass of penguins to estimate their sex. The data are in the `palmerpenguins` package, which was created by Allison Horst to compile data on penguins of three species taht were measured at the Palmer Long Term Ecological Research Station in Antarctica.
-
-```{r penguin-sex-model}
-# load the palmerpenguins package and attach the data
-library(palmerpenguins)
-data(penguins)
-
-m_penguin_sex = glm(sex ~ species + body_mass_g, data=penguins, family='binomial')
-summary(m_penguin_sex)
-layout(matrix(1:4, 2, 2))
-plot(m_penguin_sex)
-```
 
 
 ### Bill length of penguins

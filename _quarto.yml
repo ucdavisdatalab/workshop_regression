@@ -21,6 +21,7 @@ book:
     - 01_introduction.qmd
     - 02_linear_model.qmd
     - 03_categorical_continuous.qmd
+    - 04_generalized_linear_model.qmd
     - 05_fixed_random_effects.qmd
     - 06_conclusion.qmd
   
