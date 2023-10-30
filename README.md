@@ -21,6 +21,14 @@ After this workshop, learners will be able to:
 - Do diagnostic checks on your regression models
 
 
+– Describe the differences between linear and generalized linear regression models
+– Identify when and how to use fixed and random effects in regression models
+– Explain how continuous and categorical variables are handled differently in regression modeling software
+– List relevant packages for regression modeling in R
+– Write a regression model in R for a case study dataset
+– Interpret regression summary tables
+– Conduct diagnostic checks on their regression models
+
 ## Contributing
 
 The course reader is a live webpage, hosted through GitHub, where you can enter

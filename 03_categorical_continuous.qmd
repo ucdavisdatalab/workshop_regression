@@ -17,6 +17,20 @@ penguins_small = subset(penguins, !is.na(body_mass_g)) |>
   split(f=~species) |>
   lapply(function(x) subset(x, c(rep(TRUE, 5), rep(FALSE, nrow(x)-5)))) |>
   bind_rows()
+
+# define a named sunm-to-zero contrast
+named.contr.sum<-function(x, ...) {
+    if (is.factor(x)) {
+        x <- levels(x)
+    } else if (is.numeric(x) & length(x)==1L) {
+        stop("cannot create names with integer value. Pass factor levels")
+    }
+    x<-contr.sum(x, ...)
+    colnames(x) <- apply(x,2,function(x) 
+        paste(names(x[x>0]), "mean", sep="-")
+    )
+    x
+}
 ```
 
 
@@ -48,15 +62,16 @@ ggplot(penguins_small) +
 Clearly, we need to treat the species as categories, rather than as coordinates along a continuum. Looking at the summary of a regression model gives a clue as to how that works.
 
 
-```{r penguin-model-summary}
+```{r penguin-species-mass}
 cat("Mean mass by species:\n")
 penguin_means = with(penguins_small, split(body_mass_g, species)) |>
   sapply(mean, na.rm=TRUE) |>
   round(2)
 print(penguin_means)
+```
 
-cat("\n-----\n\nlm summary:\n")
-
+Now let's see the estimated masses from a linear model.
+```{r penguin-mass_model}
 penguin_lm = lm(body_mass_g ~ species, data=penguins_small)
 summary(penguin_lm)
 ```
@@ -65,15 +80,39 @@ summary(penguin_lm)
 Notice that the fitted value of the `(Intercept)` is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the `Estimate` column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.
 
 ### Design matrix
-The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The `model.matrix()` is the function that R uses internally to prepare data for an `lm()`, but we can call it ourselves. Remember that linear regresson works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.
+The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The `model.matrix()` is the function that R uses internally to prepare data for an `lm()`, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.
 
 ```{r penguin-model-matrix}
 model.matrix(penguin_lm)
 ```
 
-Here, we have three terms: `(Intercept)`, `speciesChinstrap`, and `speciesGentoo`. So to calculate the mass that is estimated for row 160, we will add `1 * (Intercept) + 1 * speciesGentoo`. Since the effect `(Intercept)` is the average mass of the Adelie penguins, the effect `speciesGentoo` must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins.  Why no term for `speciesAdelie`? It's because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams, and end up with different effects but the same model fit. The computer has no way of deciding between those options, so it must avoid that situation.
+Here, we have three terms: `(Intercept)`, `speciesChinstrap`, and `speciesGentoo`. So to calculate the mass that is estimated for row 12, we will add `1 * (Intercept) + 1 * speciesGentoo`. Since the effect `(Intercept)` is the average mass of the Adelie penguins, the effect `speciesGentoo` must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins.  Why no term for `speciesAdelie`? It's because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams and end up with the same model fit, despite different effects. The computer has no way of deciding between those options, because it just optimizing the model fit.
 
-There are other possible ways to look at the species effects.
+There are other possible ways to look at the species effects. One of my favorites is using sum-to-zero contrasts, because then the intercept is the mean treatment effect, rather than being set to one specific baseline treatment effect. In any case, you will see that the estimated effect for each level is identical, despite the difference in 
 
 
 
+```{r penguin-sum-to-zero-summary}
+penguin_lm_stz = lm(body_mass_g ~ species, data=penguins_small, contrasts=list("species"=named.contr.sum))
+summary(penguin_lm_stz)
+model.matrix(penguin_lm_stz)
+```
+
+```{r }
+
+# compare preductions between the models with different contrasts:
+pred_df = data.frame(species=c("Adelie", "Chinstrap", "Gentoo"))
+predict(penguin_lm, pred_df)
+predict(penguin_lm_stz, pred_df)
+```
+
+
+## Examples
+
+Here is an example of a Poisson regression model. 
+
+```{r poisson-regression-insect-sprays}
+model_spray = glm(count ~ spray, data=InsectSprays, family='poisson')
+summary(model_spray)
+plot(model_spray)
+```

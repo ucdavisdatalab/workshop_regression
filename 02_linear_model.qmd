@@ -13,17 +13,31 @@ m_cars = lm(dist~speed, data=cars)
 
 ```{r cars-plot}
 plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
-lines(xx, predict(m_cars, newdata=data.frame(speed=xx)))
+abline(-17.6, 3.9)
 ```
 
 ## Residuals
 We have a special term for the difference between the fitted line and the true dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:
 
 ```{r residual-example}
-
+#| echo: false
+i = 26
+plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
+lines(xx, predict(m_cars, newdata=data.frame(speed=xx)))
+for (i in c(4, 22, 25, 45)) {
+  with(cars,
+       lines(
+          rep(cars$speed[[i]], 2),
+          c(dist[[i]], predict(m_cars, newdata=data.frame(speed=cars$speed[[i]]))),
+          lty=3,
+          col='red',
+          lwd=2
+       )
+  )
+}
 ```
 
-Obviously, you'd want your model of the response to fit perfectly, but that's generally not possible in the real world. So we have to accept the best fit that we can accomplish.
+Obviously, you'd want your model of the response to fit perfectly but there's no line that would go through all the points.
 
 ## How the line is calculated
 
@@ -31,23 +45,118 @@ A line is totally defined by its slope and intercept (intercept is where the lin
 
 We call each dot an "observation", and each one comes from one row of the spreadsheet. Each column of the spreadsheet is a "feature". One column is special because it is the column where errors are calculated. We call that column the "response". 
 
-Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s). ***Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms have come to be used interchangeably.
+Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s).
 
-## Multiple features
-
-Our exmple above has just a single feature to create a model for the response. It is ore commong to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods. So assume $p<n$.
-
-When there are multiple features, it is no longer possible to draw the relationship as a line trhough a scatterplot. But everything else works just the same. 
+Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms have come to be used interchangeably.
 
 ### The `lm()` function in R
-The function to estimate a linear regression model in R is called `lm()`. We'll get quite familiar with the function during this workshop.
+The function to estimate a linear regression model in R is called `lm()`. We'll get quite familiar with the function during this workshop. Now let's use it to estimate the regression line in our distance-to-stop example.
 
+```{r lm-first-example}
+stop_model = lm(dist ~ speed, data=cars)
+summary(stop_model)
+```
+
+
+There is a bit of unique R code in the call to `lm()`: it uses R's formula syntax. A formula in R has the response variable on the left of a tilde (`~`) and predictors on the right. You may see it in other contexts but its most common use is to specify the variables of a regression formula. Having used the `lm()` function to estimate the regression model, we then use the `summary()` function to inspect the model fit. Let's dig into the `summary()` output.
+
+The important parts of the `summary()` results are the `Coefficients:` and below. The first two parts of the `summary()` result (`Call:` and `Residuals:`) are usually not very interesting. At this point, you probably recognize that the `Call:` is repeating back the function call that created the model, and the `Residuals:` section tells you about the size of the residuals.
+
+Starting with `Coefficients:` we begin to learn about the model fit. You remember that the linear model fits a straight line to the data. And you might also know that you can describe a line by its slope and intercept, as in $y = ax + b$. In that equation, $b$ is the intercept and $a$ is the slope, also known as the coefficient of $x$. The coefficient of `speed` functions as the slope of our line, and it is listed in the `Estimate` column. As you might guess, the intercept of the estimated line is listed as under the `Estimate` column and the `(Intercept)` row.
+
+The `Std. Error` column is an estimate of uncertainty in the coefficient estimates. The `t value` column is just the `Estimate` divided by the `Std. Error`, and it is used to calculate the `Pr(>|t|)` column (better known as the coefficient p-value.)
+
+The remaining information (`Residual standard error`, `degrees of freedom`, `Multiple R-squared`, `Adjusted R-squared`, `F-statistic`, and `p-value`) is beyond this introductory workshop. Just know that the p-value reported here is almost useless.
+
+In contrast, the coefficient p-values, reported as `Pr(>|t|)` in the `Coefficients:` table, are often the main focus of analysis. Making use of these p-values and interpreting the asterisks as indicators of statistical significance depends on proper use of the `lm()` function. In particular, you must decide which variables to use before fitting a model, and you can only try once - otherwise, the p-values will be biased by peeking at the result before doing the test.
 
 
 ## Assumptions of linear regression
 There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these:
+
 1. Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs. residual plot is evidence that the linearity assumption may be wrong. 
+
 2. Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.
+
 3. Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot. 
-4. The residuals must be independent of each other. You can't easily check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.)
+
+4. The residuals must be independent of each other. You can't actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.
+
+Let's check the assumptions on the distance-to-stop model:
+
+```{r}
+layout(matrix(1:4, 2, 2))
+plot(stop_model)
+```
+
+Here, there is a slight fan-shaed pattern in the Residual v. Fitted plot, and an increasing trend in the Scale-Location plot. Both of these indicate that the variances of the residuals aren't equal. You can also see the Q-Q plot deviate from the dotted diagonal line, which indicates that the residuals may not be all from an identical normal distribution. The deviations from ideal are pretty minor, and you could probably rely on this model to predict new data. But a more correct model is possible by applying a transformation that mutes the variability of the largest values (often that's a log transformation, but here a square-root transformation would be ideal.)
+
+```{r sqrt-transformation}
+stop_model_sqrt = lm(sqrt(dist) ~ speed, data=cars)
+summary(stop_model_sqrt)
+layout(matrix(1:4, 2, 2))
+plot(stop_model_sqrt)
+```
+
+## Multiple features
+
+Our example above has just a single feature to create a model for the response. It is more common to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods. So assume $p<n$.
+
+When there are multiple features, it is no longer possible to draw the relationship as a line through a scatterplot. But everything else works just the same. 
+
+### Which features to include?
+A common question is how to decide which features to include in a model. A definitive answer is probably impossible, since well-one model selection (as it is called) is the product of experience and expertise with the system that you're modeling. In the simplest terms, the correct features for your model are the ones that are relevant to your study. They should be considered carefully before trying to estimate the model, and of course you have to keep in mind assumption (1) for linear models: "The actual relationship between the features and the response is linear." This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.
+
+There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data.
+
+
+
+## Generalized linear regression
+We won't put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor. 
+
+- Response distribution is different. As a result:
+  - Response variance is no longer assumed equal (when variance depends on mean).
+  - The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what's called a "Link Function").
+  - Thus, diagnostics have to change.
+
+
+## Examples
+
+### Seatbelts save lives
+The UK introduced a law to require seatbelts in January 1983. We have a dataset of the monthly driver fatalities in the UK from 1969 through 1984, and want to estimate what effect the seatbelt law had on driver fatalities. The `Seatbelts` data set is built into R and can be imported via `data("Seatbelts")`. The relevant columns are `DriversKilled`, `kms`, `PetrolPrice`, and `law`.
+
+```{r seatbelt-model}
+data("Seatbelts")
+seatbelt_model = lm(DriversKilled ~ kms + PetrolPrice + law, data = Seatbelts)
+summary(seatbelt_model)
+layout(matrix(1:4, 2, 2))
+plot(seatbelt_model)
+```
+
+
+### Sex of penguins
+Here is an example of a logistic regression model, where we use the species and body mass of penguins to estimate their sex. The data are in the `palmerpenguins` package, which was created by Allison Horst to compile data on penguins of three species taht were measured at the Palmer Long Term Ecological Research Station in Antarctica.
+
+```{r penguin-sex-model}
+# load the palmerpenguins package and attach the data
+library(palmerpenguins)
+data(penguins)
+
+m_penguin_sex = glm(sex ~ species + body_mass_g, data=penguins, family='binomial')
+summary(m_penguin_sex)
+layout(matrix(1:4, 2, 2))
+plot(m_penguin_sex)
+```
+
+
+### Bill length of penguins
+
+```{r penguin-bill-model}
+m_penguin_bill = lm(bill_length_mm ~ flipper_length_mm + species, data=penguins)
+summary(m_penguin_bill)
+layout(1:4, matrix(2, 2))
+plot(m_penguin_bill)
+```
+
+
 
