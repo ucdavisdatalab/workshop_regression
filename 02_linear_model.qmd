@@ -201,7 +201,7 @@ There are data-driven ways of doing model selection, most of which can be summar
 
 
 
-
+<!---
 
 ## Examples
 
@@ -217,7 +217,7 @@ plot(seatbelt_model)
 ```
 
 
-
+--->
 
 
 
