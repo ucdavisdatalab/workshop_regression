@@ -1,0 +1,42 @@
+---
+title: "scratch_pad"
+---
+
+
+
+
+```{r simplest-linear-model}
+#| echo: false
+#| include: false
+
+# import data and create linear model
+data(cars)
+xx = seq(5, 25, length.out=5)
+m_cars = lm(dist~speed, data=cars)
+```
+
+```{r cars-plot}
+plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
+abline(-17.6, 3.9)
+```
+
+## Residuals
+We have a special term for the difference between the fitted line and the true dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:
+
+```{r residual-example}
+#| echo: false
+i = 26
+plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
+lines(xx, predict(m_cars, newdata=data.frame(speed=xx)))
+for (i in c(4, 22, 25, 45)) {
+  with(cars,
+       lines(
+          rep(cars$speed[[i]], 2),
+          c(dist[[i]], predict(m_cars, newdata=data.frame(speed=cars$speed[[i]]))),
+          lty=3,
+          col='red',
+          lwd=2
+       )
+  )
+}
+```
