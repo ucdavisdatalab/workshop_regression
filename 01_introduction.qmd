@@ -18,14 +18,58 @@ Likewise, the following may be used interchangeably:
 ## Outline
 These are the parts of the workshop:
 
-### First day
+### Part one
 1. Linear model
 2. Categorical vs. continuous features
-
-### Second day
 3. Generalized linear model
-4. Fixed and random effects
+
+### Part two
+4. Random effects nd mixed-effects models
+
+--------------------
+## The linear model
+Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s).
+
+Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.
+
+The data for a linear model are typically in a spreadsheet format, where each row of data is called an "observation" and each column is called a "feature". The column that is the outcome of the model is called the "response". Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
+
+### Preparation
+Your computer will do whatever you tell it to do, even if it's not a good idea. With this great power comes the responsibility to think, and to check your assumptions.
+
+The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.
+
+The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.
 
 
 
+```{r install-datasaurus}
+#| include: false
+#| eval: false
+#| echo: false
+remotes::install_github("jumpingrivers/datasauRus")
+```
 
+
+```{r plot-datasaurus}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(datasauRus)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+group_by(datasaurus_dozen, dataset) |>
+  summarize(correlation = round(cor(x, y), 3), across(c('x', 'y'), .fns=list('mn'=~round(mean(.x), 1), 'var'= ~ round(var(.x), 1))))
+
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset)) +
+    geom_point() +
+    theme_void() +
+    theme(legend.position = "none") +
+    facet_wrap(~dataset, ncol = 3)
+```
+
+
+You probably wouldn't use a linear model for most of the panels of that plot because there isn't a linear relationship between the feature (x-direction) and the response (y-direction). Plotting the data can also reveal problems or oddities in the data that will guide your further investigation.

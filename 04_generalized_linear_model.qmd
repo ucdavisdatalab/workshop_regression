@@ -56,22 +56,42 @@ We won't put much emphasis on generalized linear models (GLMs) in this workshop,
   - The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what's called a "Link Function").
   - Thus, diagnostics have to change.
 
-### Sex of penguins
-Here is an example of a logistic regression model, where we use the species and body mass of penguins to estimate their sex. The data are in the `palmerpenguins` package, which was created by Allison Horst to compile data on penguins of three species taht were measured at the Palmer Long Term Ecological Research Station in Antarctica.
+### Logistic Regression - UC Berkeley Admissions
+The `UCBAdmissions` dataset is built into R and provides a tabulation of how many men and women applied and were admitted to six departments at UC Berkeley in 1973. Suppose we want to estimate whether male or female applicants were more likely than the other to be admitted. Since each admission decision is binary, we will use a generalized linear model with binomial response to estimate the effect of gender on admission probability. The data are built-in as an array so we need to convert them to a data frame before getting started.
 
-```{r penguin-sex-model}
-# load the palmerpenguins package and attach the data
-library(palmerpenguins)
-data(penguins)
+```{r convert-ucb-data}
+library(tidyr)
+ucb = as.data.frame(UCBAdmissions) |>
+  pivot_wider(names_from = Admit, values_from = Freq)
 
-m_penguin_sex = glm(sex ~ species + body_mass_g, data=penguins, family='binomial')
-summary(m_penguin_sex)
-layout(matrix(1:4, 2, 2))
-plot(m_penguin_sex)
+ucb
 ```
 
+Now fit the binomial regression model for admission probability. By default, R uses logistic regression for a binomial response. Because the observations are aggregated by gender and department, we have to pair the `Admitted` and `Rejected` columns as the response. If each row represented a single observation and the `Admitted` column were coded as 0/1 or `TRUE`/`FALSE`, we could use it alone as the response.
+```{r ucb-model}
+# estimate a logistic regression model.
+ucb_model = glm(cbind(Admitted, Rejected) ~ Dept + Gender, data=ucb, family='binomial')
 
-### Examples
+# plot the diagnostics
+layout(matrix(1:4, 2, 2))
+plot(ucb_model)
+
+# show the model summary
+summary(ucb_model)
+```
+
+Diagnostics are especially difficult to interpret for logistic regression models with a small amount of data. These look only OK. According to the model summary, there are significant differences in admission rates by departments and not by gender.
+
+For a logistic regression model, the estimated coefficients are reported as log odds ratios. A log odds ratio greater than zero corresponds to probability greater than 50%, and vice versa. Both `Dept` and `Gender` are categorical, so you can figure the estimated log odds ratio for a particular combination by adding the relevant rows from the summary table. The default level of this combination is `Male` and `DeptA`.
+
+<!---This data has often been used to illustrate Simpson's Paradox, because overall men were admitted at a greater rate than women, but this may be because women applied to more selective departments. --->
+
+
+
+
+
+<!---
+## Poisson Regression - Effectiveness of Bug Sprays
 
 Here is an example of a Poisson regression model. 
 
@@ -80,3 +100,9 @@ model_spray = glm(count ~ spray, data=InsectSprays, family='poisson')
 summary(model_spray)
 plot(model_spray)
 ```
+
+
+...)
+
+
+

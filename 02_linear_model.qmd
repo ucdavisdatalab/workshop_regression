@@ -1,68 +1,127 @@
 # Linear Regression
 Linear regression means drawing a straight line through a scatterplot of the data. That's easy to picture when there is a single feature, so let's look at an example.
 
-```{r simplest-linear-model}
+## Palmer penguins data
+This first example will use data from the [`palmerpenguins` package](https://allisonhorst.github.io/palmerpenguins/). It was created by Allison Horst and contains observations of 344 penguins from the Palmer Station Antarctica LTER site. There are eight features: year, species, sex, island, bill width (mm), bill length (mm), flipper length (mm), and body mass (g). We'll begin by installing and then importing the `palmerpenguins` package, and then loading the data.
+
+```{r load-penguins}
+#| message: false
+#| warning: false
+#| eval: false
+install.packages("palmerpenguins")
+library(palmerpenguins)
+data(penguins)
+```
+
+```{r hidden-load}
 #| echo: false
 #| include: false
-
-# import data and create linear model
-data(cars)
-xx = seq(5, 25, length.out=5)
-m_cars = lm(dist~speed, data=cars)
+library(palmerpenguins)
+library(broom)
+library(ggplot2)
+library(dplyr)
+data(penguins)
+m_p = lm(body_mass_g ~ flipper_length_mm, data=penguins)
 ```
 
-```{r cars-plot}
-plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
-abline(-17.6, 3.9)
+The data is loaded. Let's look at it. First, we'll familiarize ourselves with the values.
+
+```{r import-penguins}
+# check out the palmer penguins data
+summary(penguins)
+print(penguins)
 ```
+
+Suppose we think that all penguins grow in a certain proportional way. Then we may be able to estimate the penguin's mass based on the length of its flipper. Let's take a look at how that relationship looks in the data.
+
+```{r penguins-plot}
+#| echo: false
+#| warning: false
+#| message: false
+ggplot(penguins) +
+  aes(x=flipper_length_mm, y=body_mass_g) +
+  geom_point() + 
+  xlab("Flipper length (mm)") +
+  ylab("Penguin mass (g)") +
+  geom_smooth(method='lm', se=FALSE)
+```
+
+I've added a regression line to illustrate the assumed linear relationship. Obviously, you'd want your model of the response to fit perfectly but there's no line that would go through all the points.
 
 ## Residuals
-We have a special term for the difference between the fitted line and the true dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:
+We have a special term for the difference between the fitted line and the dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:
 
 ```{r residual-example}
 #| echo: false
-i = 26
-plot(cars, xlab="Speed (mph)", ylab="Distance to stop (ft)", bty='n')
-lines(xx, predict(m_cars, newdata=data.frame(speed=xx)))
-for (i in c(4, 22, 25, 45)) {
-  with(cars,
-       lines(
-          rep(cars$speed[[i]], 2),
-          c(dist[[i]], predict(m_cars, newdata=data.frame(speed=cars$speed[[i]]))),
-          lty=3,
-          col='red',
-          lwd=2
-       )
+#| warning: false
+#| message: false
+ggplot(penguins) +
+  aes(x=flipper_length_mm, y=body_mass_g) +
+  geom_point() + 
+  xlab("Flipper length (mm)") +
+  ylab("Penguin mass (g)") +
+  geom_smooth(method='lm', se=FALSE) +
+  geom_segment(
+    data=mutate(
+      penguins,
+      fitted = predict(m_p, penguins))[250:251,],
+    mapping=aes(x=flipper_length_mm,
+                xend=flipper_length_mm,
+                y=body_mass_g,
+                yend=fitted),
+    color='red',
+    lwd=1
   )
-}
 ```
 
-Obviously, you'd want your model of the response to fit perfectly but there's no line that would go through all the points.
 
 ## How the line is calculated
 
-A line is totally defined by its slope and intercept (intercept is where the line crosses the y-axis). The math of linear regression is just a way to calculate the slope and intercept of that line, and its intuition is also quite simple. It starts with the goal of minimizing the errors. There is an error for each dot, which is the difference between the line and the dot. To minimize the errors, we need to combine all those numbers into one (otherwise, you might have to worry about what effect a change in "A" has on "B", etc.) A natural way to combine many numbers into one is to add them together (or take the mean, which is adding together and then dividing by a constant. Since the constant doesn't change, we can leave it out or not without affecting the location of the minimum.) But there is a problem: errors can be negative (when the model fit is greater than the observed data.) A large negative error would be a good thing for "minimizing" error, but we don't want that because the error is large. So the errors are squared before adding them together. This is the origin of terms you might have heard, like the sum of squared errors or the mean squared error.
+A line is totally defined by its slope and intercept (intercept is where the line crosses the y-axis). The math of linear regression is just a way to calculate the slope and intercept of that line, and its intuition is also quite simple. It starts with the goal of minimizing the errors. There is an error for each dot, which is the difference between the line and the dot. To minimize the errors, we need to combine all those numbers into one (otherwise, you might have to worry about what effect a change in "A" has on "B", etc.) A natural way to combine many numbers into one is to add them together. But there is a problem: errors can be negative (when the model fit is greater than the observed data.) If that seems complicated, just understand that both of these lines have residuals that sum to zero:
 
-We call each dot an "observation", and each one comes from one row of the spreadsheet. Each column of the spreadsheet is a "feature". One column is special because it is the column where errors are calculated. We call that column the "response". 
+```{r penguins-errors}
+#| echo: false
+#| warning: false
+#| message: false
+library(cowplot)
 
-Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s).
+regression_plot = ggplot(penguins) +
+  aes(x=flipper_length_mm, y=body_mass_g) +
+  geom_point() + 
+  xlab("Flipper length (mm)") +
+  ylab("Penguin mass (g)") +
+  geom_smooth(method='lm', se=FALSE)
 
-Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms have come to be used interchangeably.
+mean_plot = ggplot(penguins) +
+  aes(x=flipper_length_mm, y=body_mass_g) +
+  geom_point() + 
+  xlab("Flipper length (mm)") +
+  ylab("Penguin mass (g)") +
+  geom_hline(
+    mapping=aes(yintercept=mean(body_mass_g, na.rm=TRUE)),
+    color="blue",
+    lwd=1)
 
-### The `lm()` function in R
-The function to estimate a linear regression model in R is called `lm()`. We'll get quite familiar with the function during this workshop. Now let's use it to estimate the regression line in our distance-to-stop example.
-
-```{r lm-first-example}
-stop_model = lm(dist ~ speed, data=cars)
-summary(stop_model)
+cowplot::plot_grid(regression_plot, mean_plot, ncol=2)
 ```
 
+A large negative error may be a good thing for "minimizing" error, but we don't want that because the error is large. So the errors are *squared* before adding them together. This is the origin of terms you might have heard, like the sum of squared errors or the mean squared error.
+
+### The `lm()` function in R
+The function to estimate a linear regression model in R is called `lm()`. We'll get quite familiar with the function during this workshop. Now let's use it to estimate the regression line in our penguin body size example.
+
+```{r lm-first-example}
+penguin_mass_model = lm(
+  body_mass_g ~ flipper_length_mm,
+  data=penguins)
+summary(penguin_mass_model)
+```
 
 There is a bit of unique R code in the call to `lm()`: it uses R's formula syntax. A formula in R has the response variable on the left of a tilde (`~`) and predictors on the right. You may see it in other contexts but its most common use is to specify the variables of a regression formula. Having used the `lm()` function to estimate the regression model, we then use the `summary()` function to inspect the model fit. Let's dig into the `summary()` output.
 
 The important parts of the `summary()` results are the `Coefficients:` and below. The first two parts of the `summary()` result (`Call:` and `Residuals:`) are usually not very interesting. At this point, you probably recognize that the `Call:` is repeating back the function call that created the model, and the `Residuals:` section tells you about the size of the residuals.
 
-Starting with `Coefficients:` we begin to learn about the model fit. You remember that the linear model fits a straight line to the data. And you might also know that you can describe a line by its slope and intercept, as in $y = ax + b$. In that equation, $b$ is the intercept and $a$ is the slope, also known as the coefficient of $x$. The coefficient of `speed` functions as the slope of our line, and it is listed in the `Estimate` column. As you might guess, the intercept of the estimated line is listed as under the `Estimate` column and the `(Intercept)` row.
+Starting with `Coefficients:` we begin to learn about the model fit. You remember that the linear model fits a straight line to the data. And you might also know that you can describe a line by its slope and intercept, as in $y = ax + b$. In that equation, $b$ is the intercept and $a$ is the slope, also known as the coefficient of $x$. The coefficient of `flipper_length_mm` functions as the slope of our line, and it is listed in the `Estimate` column. As you might guess, the intercept of the estimated line is listed as under the `Estimate` column and the `(Intercept)` row.
 
 The `Std. Error` column is an estimate of uncertainty in the coefficient estimates. The `t value` column is just the `Estimate` divided by the `Std. Error`, and it is used to calculate the `Pr(>|t|)` column (better known as the coefficient p-value.)
 
@@ -82,32 +141,63 @@ There are a few assumptions about your data that come with linear regression. Be
 
 4. The residuals must be independent of each other. You can't actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.
 
-Let's check the assumptions on the distance-to-stop model:
+Let's check the assumptions on the penguin body size model:
 
 ```{r}
 layout(matrix(1:4, 2, 2))
-plot(stop_model)
+plot(penguin_mass_model)
 ```
 
-Here, there is a slight fan-shaed pattern in the Residual v. Fitted plot, and an increasing trend in the Scale-Location plot. Both of these indicate that the variances of the residuals aren't equal. You can also see the Q-Q plot deviate from the dotted diagonal line, which indicates that the residuals may not be all from an identical normal distribution. The deviations from ideal are pretty minor, and you could probably rely on this model to predict new data. But a more correct model is possible by applying a transformation that mutes the variability of the largest values (often that's a log transformation, but here a square-root transformation would be ideal.)
-
-```{r sqrt-transformation}
-stop_model_sqrt = lm(sqrt(dist) ~ speed, data=cars)
-summary(stop_model_sqrt)
-layout(matrix(1:4, 2, 2))
-plot(stop_model_sqrt)
-```
+Here, there is a slight "U" shape in the Residual vs Fitted plot and in the Q-Q plot, which indicates that the relationship between flipper length and body mass is not quite linear. The points fall very close to the dashed diagonal on the Q-Q plot, which indicates that the residuals all seem to be from a nearly identical normal distribution. There is no clear pattern in the scale-location plot, so the residual variances are approximately equal. The deviations from ideal are pretty minor, and you could probably rely on this model to predict the mass of new penguins. But a more correct model is possible by looking at the species separately, as we'll see in the next chapter.
 
 ## Multiple features
 
-Our example above has just a single feature to create a model for the response. It is more common to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods. So assume $p<n$.
+Our example above has just a single feature to create a model for the response. It is more common to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods.
 
-When there are multiple features, it is no longer possible to draw the relationship as a line through a scatterplot. But everything else works just the same. 
+When there are multiple features, they may be correlated with each other. This is almost always true of observational data (which are features that are measured from the observed units). Typically, the only way to have perfectly uncorrelated data is by designing an experiment where the treatments are uncorrelated.
+
+Correlated features will affect each others' estimates, and the effect increases with the amount of correlation. That happens because when features are correlated, the model has similar fits if one coefficient increases and the other decreases, or vice versa.
+
+We can reasonably assume that penguins with longer flippers and heavier bodies also have longer bills. That's true, as seen in this figure: 
+
+```{r bill-length}
+#| echo: false
+#| warning: false
+#| message: false
+bill_plot_1 = ggplot(penguins) +
+  aes(x=flipper_length_mm, y=bill_length_mm) +
+  geom_point() + 
+  xlab("Flipper length (mm)") +
+  ylab("Bill length (mm)")
+
+bill_plot_2 = ggplot(penguins) +
+  aes(x=body_mass_g, y=bill_length_mm) +
+  geom_point() + 
+  xlab("Body mass (g)") +
+  ylab("Bill length (mm)")
+
+cowplot::plot_grid(bill_plot_1, bill_plot_2, ncol=2)
+```
+
+As a result, including the bill length as a second feature in the model for body mass leads to a change in the estimated regression coefficient for flipper length and an increase in the uncertainty for that estimate:
+
+```{r lm-correlated-example}
+correlated_model = lm(
+  body_mass_g ~ flipper_length_mm + bill_length_mm,
+  data=penguins)
+summary(correlated_model)
+```
+
+The estimated coefficient has changed from `r round(coef(penguin_mass_model)[[2]], 1)` to `round(coef(correlated_model)[[2]], 1)` and the standard error of the estimated coefficient for `flipper_length_mm` is `r summary(correlated_model)$coefficients[["flipper_length_mm", "Std. Error"]] |> round(1)`, which is 32% greater than the previous standard error of `r summary(penguin_mass_model)$coefficients[["flipper_length_mm", "Std. Error"]] |> round(1)`.
 
 ### Which features to include?
-A common question is how to decide which features to include in a model. A definitive answer is probably impossible, since well-one model selection (as it is called) is the product of experience and expertise with the system that you're modeling. In the simplest terms, the correct features for your model are the ones that are relevant to your study. They should be considered carefully before trying to estimate the model, and of course you have to keep in mind assumption (1) for linear models: "The actual relationship between the features and the response is linear." This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.
+A common question is how to decide which features to include in a model. A definitive answer is probably impossible, since the "best" model depends on the goal of the analysis, and model selection frequently ends in marginal and somewhat subjective decisions. In the simplest terms, the correct features for your model are the ones that are relevant to your analysis.
 
-There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data.
+
+
+If your goal is to study is to understand the effect that some specific features have on the response, then it's best to decide what those are before trying to estimate the model, and of course you have to keep in mind assumption (1) for linear models: "The actual relationship between the features and the response is linear." This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.
+
+There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data. In order to mitigate that risk, a portion of the data has to be held out from the model fitting, to test the model with.
 
 
 
@@ -128,15 +218,6 @@ plot(seatbelt_model)
 
 
 
-
-### Bill length of penguins
-
-```{r penguin-bill-model}
-m_penguin_bill = lm(bill_length_mm ~ flipper_length_mm + species, data=penguins)
-summary(m_penguin_bill)
-layout(1:4, matrix(2, 2))
-plot(m_penguin_bill)
-```
 
 
 
