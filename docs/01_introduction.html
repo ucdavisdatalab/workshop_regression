@@ -127,6 +127,11 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized how?</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
   </div>
 </li>
@@ -147,8 +152,12 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
   <ul class="collapse">
-  <li><a href="#first-day" id="toc-first-day" class="nav-link" data-scroll-target="#first-day">First day</a></li>
-  <li><a href="#second-day" id="toc-second-day" class="nav-link" data-scroll-target="#second-day">Second day</a></li>
+  <li><a href="#part-one" id="toc-part-one" class="nav-link" data-scroll-target="#part-one">Part one</a></li>
+  <li><a href="#part-two" id="toc-part-two" class="nav-link" data-scroll-target="#part-two">Part two</a></li>
+  </ul></li>
+  <li><a href="#the-linear-model" id="toc-the-linear-model" class="nav-link" data-scroll-target="#the-linear-model">The linear model</a>
+  <ul class="collapse">
+  <li><a href="#preparation" id="toc-preparation" class="nav-link" data-scroll-target="#preparation">Preparation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -185,19 +194,56 @@ ul.task-list li input[type="checkbox"] {
 <section id="outline" class="level2">
 <h2 class="anchored" data-anchor-id="outline">Outline</h2>
 <p>These are the parts of the workshop:</p>
-<section id="first-day" class="level3">
-<h3 class="anchored" data-anchor-id="first-day">First day</h3>
+<section id="part-one" class="level3">
+<h3 class="anchored" data-anchor-id="part-one">Part one</h3>
 <ol type="1">
 <li>Linear model</li>
 <li>Categorical vs.&nbsp;continuous features</li>
+<li>Generalized linear model</li>
 </ol>
 </section>
-<section id="second-day" class="level3">
-<h3 class="anchored" data-anchor-id="second-day">Second day</h3>
-<ol start="3" type="1">
-<li>Generalized linear model</li>
-<li>Fixed and random effects</li>
+<section id="part-two" class="level3">
+<h3 class="anchored" data-anchor-id="part-two">Part two</h3>
+<ol start="4" type="1">
+<li>Random effects nd mixed-effects models</li>
 </ol>
+<hr>
+</section>
+</section>
+<section id="the-linear-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-linear-model">The linear model</h2>
+<p>Let’s say what we mean by a “linear model”. This is an equation that describes some output variable as a linear function of some input variable(s).</p>
+<p>Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.</p>
+<p>The data for a linear model are typically in a spreadsheet format, where each row of data is called an “observation” and each column is called a “feature”. The column that is the outcome of the model is called the “response”. Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
+<section id="preparation" class="level3">
+<h3 class="anchored" data-anchor-id="preparation">Preparation</h3>
+<p>Your computer will do whatever you tell it to do, even if it’s not a good idea. With this great power comes the responsibility to think, and to check your assumptions.</p>
+<p>The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.</p>
+<p>The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 6
+   dataset    correlation  x_mn x_var  y_mn y_var
+   &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 away            -0.064  54.3  281.  47.8  726.
+ 2 bullseye        -0.069  54.3  281.  47.8  726.
+ 3 circle          -0.068  54.3  281.  47.8  725.
+ 4 dino            -0.064  54.3  281.  47.8  726.
+ 5 dots            -0.06   54.3  281.  47.8  725.
+ 6 h_lines         -0.062  54.3  281.  47.8  726.
+ 7 high_lines      -0.069  54.3  281.  47.8  726.
+ 8 slant_down      -0.069  54.3  281.  47.8  726.
+ 9 slant_up        -0.069  54.3  281.  47.8  726.
+10 star            -0.063  54.3  281.  47.8  725.
+11 v_lines         -0.069  54.3  281.  47.8  726.
+12 wide_lines      -0.067  54.3  281.  47.8  726.
+13 x_shape         -0.066  54.3  281.  47.8  725.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="01_introduction_files/figure-html/plot-datasaurus-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You probably wouldn’t use a linear model for most of the panels of that plot because there isn’t a linear relationship between the feature (x-direction) and the response (y-direction). Plotting the data can also reveal problems or oddities in the data that will guide your further investigation.</p>
 
 
 </section>

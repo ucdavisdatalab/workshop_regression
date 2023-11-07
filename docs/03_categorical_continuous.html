@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./05_fixed_random_effects.html" rel="next">
+<link href="./04_generalized_linear_model.html" rel="next">
 <link href="./02_linear_model.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -161,6 +161,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized how?</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
   </div>
 </li>
@@ -184,7 +189,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#penguin-body-mass" id="toc-penguin-body-mass" class="nav-link" data-scroll-target="#penguin-body-mass">Penguin body mass</a></li>
   <li><a href="#design-matrix" id="toc-design-matrix" class="nav-link" data-scroll-target="#design-matrix">Design matrix</a></li>
   </ul></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#combining-continuous-and-categorical" id="toc-combining-continuous-and-categorical" class="nav-link" data-scroll-target="#combining-continuous-and-categorical">Combining continuous and categorical</a></li>
+  <li><a href="#interactions" id="toc-interactions" class="nav-link" data-scroll-target="#interactions">Interactions</a></li>
   </ul>
 </nav>
     </div>
@@ -208,222 +214,260 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>Categorical data are a common occurrence in applied regression modeling. These are any data that consist of categories rather than numbers. For instance, in aforestry experiment, you may thin the trees in some plots and do a prescribed burn in others. “Prescribed burn” and “thinning” aren’t numerical values, they are categories of treatment.</p>
+<p>Categorical data are a common occurrence in regression modeling. These are any data that consist of categories rather than numbers. For instance, in a forestry experiment, you may thin the trees in some plots and do a prescribed burn in others. “Prescribed burn” and “thinning” aren’t numerical values, they are categories of treatment.</p>
 <p>There is a grey area where categories are ordered, like low, medium, high. We will talk about two ways to handle those.</p>
 <section id="factors" class="level2">
 <h2 class="anchored" data-anchor-id="factors">Factors</h2>
-<p>In R, categorical variables are called <em>factors</em>. Deep down in the machinery of a regression model, factor effects are handled the same way as for continuous features But to fully appreciate this, you have to understand that the factors are coded differently than continuous features. To begin, we should note that linear regression for factor variables is also a kind of scatterplot smoother. Let’s look at an example:</p>
+<p>In R, categorical variables are called <em>factors</em>. Deep down in the machinery of a regression model, factor effects are handled the same way as continuous features But to fully appreciate this, you have to understand that the factors are coded differently than continuous features. To begin, we should note that linear regression for factor variables is also a kind of scatterplot smoother. Let’s look at an example:</p>
 <section id="penguin-body-mass" class="level3">
 <h3 class="anchored" data-anchor-id="penguin-body-mass">Penguin body mass</h3>
 <p>The plot shows the mass of penguins measured at the Palmer Station LTER site in Antarctica, with the data coming from Allison Horst’s <a href="https://allisonhorst.github.io/palmerpenguins/"><code>palmerpenguins</code> package</a>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins_small) <span class="sc">+</span> </span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins) <span class="sc">+</span> </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>species, <span class="at">y=</span>body_mass_g) <span class="sc">+</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Body mass of penguins by species"</span>) <span class="sc">+</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Mass (g)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 2 rows containing missing values (`geom_point()`).</code></pre>
+</div>
 <div class="cell-output-display">
 <p><img src="03_categorical_continuous_files/figure-html/penguins-spp-example-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Look carefully at the x-axis and you’ll see that the coordinates are species names, not numbers. A line drawn to fit the points would imply that there is a specific order to the species and a specific spacing between them, and that there are some intermediate values where the mass would be somewhere between the known species. But none of those are true.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins_small) <span class="sc">+</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>species, <span class="at">y=</span>body_mass_g) <span class="sc">+</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">1800</span>, <span class="at">slope=</span><span class="dv">1200</span>) <span class="sc">+</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Body mass of penguins by species with linear fit"</span>) <span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Mass (g)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="03_categorical_continuous_files/figure-html/penguin-factor-example-smoothed-1.png" class="img-fluid" width="672"></p>
-</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(penguins) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>species, <span class="at">y=</span>body_mass_g) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">1800</span>, <span class="at">slope=</span><span class="dv">1200</span>, <span class="at">color=</span><span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Body mass of penguins by species with linear fit"</span>) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Mass (g)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Clearly, we need to treat the species as categories, rather than as coordinates along a continuum. Looking at the summary of a regression model gives a clue as to how that works.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean mass by species:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>penguin_lm <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(penguin_lm) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">digits=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">3700.66</td>
+<td style="text-align: right;">37.62</td>
+<td style="text-align: right;">98.37</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">speciesChinstrap</td>
+<td style="text-align: right;">32.43</td>
+<td style="text-align: right;">67.51</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">0.63</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">speciesGentoo</td>
+<td style="text-align: right;">1375.35</td>
+<td style="text-align: right;">56.15</td>
+<td style="text-align: right;">24.50</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now let’s see the mean masses of the three species.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Mean mass by species:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Mean mass by species:</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>penguin_means <span class="ot">=</span> <span class="fu">with</span>(penguins_small, <span class="fu">split</span>(body_mass_g, species)) <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(mean, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(penguin_means)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>penguin_means <span class="ot">=</span> <span class="fu">with</span>(penguins_small, <span class="fu">split</span>(body_mass_g, species)) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(mean, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(penguin_means)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Adelie Chinstrap    Gentoo 
      3580      3660      5150 </code></pre>
-</div>
-</div>
-<p>Now let’s see the estimated masses from a linear model.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>penguin_lm <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = body_mass_g ~ species, data = penguins_small)
-
-Residuals:
-   Min     1Q Median     3Q    Max 
--700.0 -147.5   65.0  230.0  550.0 
-
-Coefficients:
-                 Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)        3580.0      177.7  20.151 1.28e-10 ***
-speciesChinstrap     80.0      251.2   0.318    0.756    
-speciesGentoo      1570.0      251.2   6.249 4.26e-05 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 397.3 on 12 degrees of freedom
-Multiple R-squared:  0.805, Adjusted R-squared:  0.7725 
-F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
 </div>
 </div>
 <p>Notice that the fitted value of the <code>(Intercept)</code> is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the <code>Estimate</code> column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.</p>
 </section>
 <section id="design-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="design-matrix">Design matrix</h3>
-<p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the baseline level because it appears first in the data.</p>
+<p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the reference level because it appears first in the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(<span class="fu">model.matrix</span>(penguin_lm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   (Intercept) speciesChinstrap speciesGentoo
-1            1                0             0
-2            1                0             0
-3            1                0             0
-4            1                0             0
-5            1                0             0
-6            1                1             0
-7            1                1             0
-8            1                1             0
-9            1                1             0
-10           1                1             0
-11           1                0             1
-12           1                0             1
-13           1                0             1
-14           1                0             1
-15           1                0             1
-attr(,"assign")
-[1] 0 1 1
-attr(,"contrasts")
-attr(,"contrasts")$species
-[1] "contr.treatment"</code></pre>
+<pre><code>    (Intercept) speciesChinstrap speciesGentoo
+339           1                1             0
+340           1                1             0
+341           1                1             0
+342           1                1             0
+343           1                1             0
+344           1                1             0</code></pre>
 </div>
 </div>
 <p>Here, we have three terms: <code>(Intercept)</code>, <code>speciesChinstrap</code>, and <code>speciesGentoo</code>. So to calculate the mass that is estimated for row 12, we will add <code>1 * (Intercept) + 1 * speciesGentoo</code>. Since the effect <code>(Intercept)</code> is the average mass of the Adelie penguins, the effect <code>speciesGentoo</code> must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins. Why no term for <code>speciesAdelie</code>? It’s because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams and end up with the same model fit, despite different effects. The computer has no way of deciding between those options, because it just optimizing the model fit.</p>
-<p>There are other possible ways to look at the species effects. One of my favorites is using sum-to-zero contrasts, because then the intercept is the mean treatment effect, rather than being set to one specific baseline treatment effect. In any case, you will see that the estimated effect for each level is identical, despite the difference in</p>
+<p>You don’t have to set one factor level to be the reference for estimation, but that goes beyond the scope of this introductory workshop. You may need to change which level is the reference, and that is within our scope. R has a function <code>relevel()</code>, which takes the argument <code>ref=</code>, which specifies the reference level of a factor. Here is how it would work to set Gentoo as the reference level:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>penguin_lm_stz <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins_small, <span class="at">contrasts=</span><span class="fu">list</span>(<span class="st">"species"</span><span class="ot">=</span>named.contr.sum))</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>penguins<span class="sc">$</span>species <span class="ot">=</span> <span class="fu">relevel</span>(penguins<span class="sc">$</span>species, <span class="at">ref=</span><span class="st">"Gentoo"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>releveled_penguin_model <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data=</span>penguins)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(releveled_penguin_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = body_mass_g ~ species, data = penguins_small, contrasts = list(species = named.contr.sum))
+lm(formula = body_mass_g ~ species, data = penguins)
 
 Residuals:
-   Min     1Q Median     3Q    Max 
--700.0 -147.5   65.0  230.0  550.0 
+     Min       1Q   Median       3Q      Max 
+-1126.02  -333.09   -33.09   316.91  1223.98 
 
 Coefficients:
-                      Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)             4130.0      102.6  40.265 3.56e-14 ***
-speciesAdelie-mean      -550.0      145.1  -3.792  0.00257 ** 
-speciesChinstrap-mean   -470.0      145.1  -3.240  0.00709 ** 
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       5076.02      41.68  121.78   &lt;2e-16 ***
+speciesAdelie    -1375.35      56.15  -24.50   &lt;2e-16 ***
+speciesChinstrap -1342.93      69.86  -19.22   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 397.3 on 12 degrees of freedom
-Multiple R-squared:  0.805, Adjusted R-squared:  0.7725 
-F-statistic: 24.77 on 2 and 12 DF,  p-value: 5.494e-05</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(penguin_lm_stz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>   (Intercept) speciesAdelie-mean speciesChinstrap-mean
-1            1                  1                     0
-2            1                  1                     0
-3            1                  1                     0
-4            1                  1                     0
-5            1                  1                     0
-6            1                  0                     1
-7            1                  0                     1
-8            1                  0                     1
-9            1                  0                     1
-10           1                  0                     1
-11           1                 -1                    -1
-12           1                 -1                    -1
-13           1                 -1                    -1
-14           1                 -1                    -1
-15           1                 -1                    -1
-attr(,"assign")
-[1] 0 1 1
-attr(,"contrasts")
-attr(,"contrasts")$species
-          Adelie-mean Chinstrap-mean
-Adelie              1              0
-Chinstrap           0              1
-Gentoo             -1             -1</code></pre>
+Residual standard error: 462.3 on 339 degrees of freedom
+  (2 observations deleted due to missingness)
+Multiple R-squared:  0.6697,    Adjusted R-squared:  0.6677 
+F-statistic: 343.6 on 2 and 339 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
+<p>With Gentoo as the reference level for species, the summary of model results tells us directly that the body mass of Adelie and Chinstrap penguins are both significantly less than that of Gentoo penguins. However we set the factor levels, the model predictions remain unchanged, which helps emphasize that the factor coding affects which interpretation(s) are emphasized in the summary but does not change the model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare preductions between the models with different contrasts:</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">species=</span><span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>))</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare predictions between the models with different contrasts:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">species=</span><span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   1    2    3 
-3580 3660 5150 </code></pre>
+<pre><code>       1        2        3 
+3700.662 3733.088 5076.016 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(penguin_lm_stz, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(releveled_penguin_model, pred_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   1    2    3 
-3580 3660 5150 </code></pre>
+<pre><code>       1        2        3 
+3700.662 3733.088 5076.016 </code></pre>
 </div>
 </div>
 </section>
 </section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<p>Here is an example of a Poisson regression model.</p>
+<section id="combining-continuous-and-categorical" class="level2">
+<h2 class="anchored" data-anchor-id="combining-continuous-and-categorical">Combining continuous and categorical</h2>
+<p>Of course, continuous and categorical features don’t have to be kept separate. We’ll return to our original example and consider whether the relationship between a penguin’s mass and its flipper length is different between the three species. You combine categorical and continuous features by adding them together in the formula.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model_spray <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays, <span class="at">family=</span><span class="st">'poisson'</span>)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a model with both species and flipper length as features</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>combo_model <span class="ot">=</span> <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> flipper_length_mm <span class="sc">+</span> species,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">data=</span>penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here is a visualization of the model fit:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/plot-no-interactions-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>As you can see, adding a categorical factor to the model has resulted in a vertical offset between the regression lines for each species, and the three regression lines all have the same slope. You should therefore interpret the species effects as species-specific intercepts for the regression line. Now, let’s generate the summary plots and the model summary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the model diagnostics</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(combo_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/analyze-no-interactions-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check out the model summary</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(combo_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-glm(formula = count ~ spray, family = "poisson", data = InsectSprays)
+lm(formula = body_mass_g ~ flipper_length_mm + species, data = penguins)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-927.70 -254.82  -23.92  241.16 1191.68 
 
 Coefficients:
-            Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)  2.67415    0.07581  35.274  &lt; 2e-16 ***
-sprayB       0.05588    0.10574   0.528    0.597    
-sprayC      -1.94018    0.21389  -9.071  &lt; 2e-16 ***
-sprayD      -1.08152    0.15065  -7.179 7.03e-13 ***
-sprayE      -1.42139    0.17192  -8.268  &lt; 2e-16 ***
-sprayF       0.13926    0.10367   1.343    0.179    
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       -3764.667    667.844  -5.637 3.65e-08 ***
+flipper_length_mm    40.705      3.071  13.255  &lt; 2e-16 ***
+speciesAdelie      -266.810     95.264  -2.801  0.00539 ** 
+speciesChinstrap   -473.320     86.746  -5.456 9.41e-08 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-(Dispersion parameter for poisson family taken to be 1)
+Residual standard error: 375.5 on 338 degrees of freedom
+  (2 observations deleted due to missingness)
+Multiple R-squared:  0.7826,    Adjusted R-squared:  0.7807 
+F-statistic: 405.7 on 3 and 338 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>The summary tells up how big are the differences between the species-specific intercepts. The diagnostic plots still exhibit a “U” shape in the Fitted Vs. Residual plot, so we haven’t yet found an ideal regression model for this data.</p>
+</section>
+<section id="interactions" class="level2">
+<h2 class="anchored" data-anchor-id="interactions">Interactions</h2>
+<p>We can improve this model further by adding an interaction between the species and the flipper length. An interaction allows the regression lines to have different slopes for the different species, as seen here:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/plot-interactions-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There will still be different intercepts between species because I have retained the so-called “main effect” of species. An intercept is written in an R formula by placing a colon (<code>:</code>) between two variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a model interacting species and flipper length as features</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>interaction_model <span class="ot">=</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(body_mass_g <span class="sc">~</span> flipper_length_mm <span class="sc">+</span> species <span class="sc">+</span> flipper_length_mm<span class="sc">:</span>species,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">data=</span>penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And now we can look at the diagnostics.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the model diagnostics</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(interaction_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="03_categorical_continuous_files/figure-html/analyze-interaction-model-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check out the model summary</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(interaction_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = body_mass_g ~ flipper_length_mm + species + flipper_length_mm:species, 
+    data = penguins)
 
-    Null deviance: 409.041  on 71  degrees of freedom
-Residual deviance:  98.329  on 66  degrees of freedom
-AIC: 376.59
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-911.18 -251.93  -31.77  197.82 1144.81 
 
-Number of Fisher Scoring iterations: 5</code></pre>
+Coefficients:
+                                    Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                        -6787.281   1124.195  -6.037 4.14e-09 ***
+flipper_length_mm                     54.623      5.174  10.557  &lt; 2e-16 ***
+speciesAdelie                       4251.444   1427.332   2.979  0.00311 ** 
+speciesChinstrap                    3750.085   1676.687   2.237  0.02597 *  
+flipper_length_mm:speciesAdelie      -21.791      6.941  -3.139  0.00184 ** 
+flipper_length_mm:speciesChinstrap   -20.049      8.190  -2.448  0.01487 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 370.6 on 336 degrees of freedom
+  (2 observations deleted due to missingness)
+Multiple R-squared:  0.7896,    Adjusted R-squared:  0.7864 
+F-statistic: 252.2 on 5 and 336 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="cell-output-display">
-<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-3.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="03_categorical_continuous_files/figure-html/poisson-regression-insect-sprays-4.png" class="img-fluid" width="672"></p>
-</div>
-</div>
+<p>The “U” shape in the residuals is gone! Also, the significantly negative coefficients for the interactions of flipper length with species Adelie and Chinstrap tells us that body mass for these species increases less quickly with flipper length than for Gentoo penguins. You can see this same relationship in the steeper slope of the red line in the scatter plot with interactions.</p>
 
 
 </section>
@@ -669,8 +713,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./05_fixed_random_effects.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Fixed and Random Effects</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./04_generalized_linear_model.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-title">Generalized how?</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
