@@ -8,6 +8,7 @@ A regression model is a way to express a relationship between some response and 
 - output variable
 
 Likewise, the following may be used interchangeably:
+
 - predictor
 - predictor variable
 - independent variable
@@ -28,18 +29,25 @@ These are the parts of the workshop:
 
 --------------------
 ## The linear model
-Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s).
 
-Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.
+A **linear model** is an equation that describes some output variable as a linear function of some input variable(s).
 
-The data for a linear model are typically in a spreadsheet format, where each row of data is called an "observation" and each column is called a "feature". The column that is the outcome of the model is called the "response". Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
+Note that the linear model is a relationship, while **linear regression** is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.
+
+The data for a linear model are typically in a tabular format (imagine a
+spreadsheet), where each row of data is called an **observation** and each
+column is called a **feature**. The column that is the outcome of the model is
+called the **response**. Each observation should include a value for every
+feature (there are some ways of handling missing data but that's beyond our
+scope for this workshop).
 
 ### Preparation
+
 Your computer will do whatever you tell it to do, even if it's not a good idea. With this great power comes the responsibility to think, and to check your assumptions.
 
 The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.
 
-The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.
+The Datasaurus Dozen are a collection of thirteen data sets. Each consists of two features (x and y) that have the same means, variances, and correlations.
 
 
 

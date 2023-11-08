@@ -48,8 +48,13 @@ To view and interpret a GLM, use the `summary()` function, just as you did for a
 
 --->
 
-# Generalized linear regression
-We won't put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor. 
+# Generalized linear models
+
+**Generalized linear models** (GLMs) are used when the response variable has
+some distribution other than normal - logistic regression (binary response) is
+by far the most commonly used GLM and Poisson regression (count response) is
+fairly common, too. In spite of this, there are many similarities between
+ordinary linear models and a generalized linear models.
 
 - Response distribution is different. As a result:
   - Response variance is no longer assumed equal (when variance depends on mean).
@@ -57,7 +62,8 @@ We won't put much emphasis on generalized linear models (GLMs) in this workshop,
   - Thus, diagnostics have to change.
 
 ### Logistic Regression - UC Berkeley Admissions
-The `UCBAdmissions` dataset is built into R and provides a tabulation of how many men and women applied and were admitted to six departments at UC Berkeley in 1973. Suppose we want to estimate whether male or female applicants were more likely than the other to be admitted. Since each admission decision is binary, we will use a generalized linear model with binomial response to estimate the effect of gender on admission probability. The data are built-in as an array so we need to convert them to a data frame before getting started.
+
+The `UCBAdmissions` data set is built into R and provides a tabulation of how many men and women applied and were admitted to six departments at UC Berkeley in 1973. Suppose we want to estimate whether male or female applicants were more likely to be admitted. Since each admission decision is binary, we will use a generalized linear model with binomial response to estimate the effect of gender on admission probability. The data are built-in as an array so we need to convert them to a data frame before getting started.
 
 ```{r convert-ucb-data}
 library(tidyr)
@@ -67,7 +73,13 @@ ucb = as.data.frame(UCBAdmissions) |>
 ucb
 ```
 
-Now fit the binomial regression model for admission probability. By default, R uses logistic regression for a binomial response. Because the observations are aggregated by gender and department, we have to pair the `Admitted` and `Rejected` columns as the response. If each row represented a single observation and the `Admitted` column were coded as 0/1 or `TRUE`/`FALSE`, we could use it alone as the response.
+Now fit the binomial regression model for admission probability. By default,
+the `glm` function uses logistic regression for a binomial response. The
+observations are aggregated by gender and department, so we have to pair the
+`Admitted` and `Rejected` columns as the response. If each row represented a
+single observation and the `Admitted` column were coded as 0/1 or
+`TRUE`/`FALSE`, we could use it alone as the response.
+
 ```{r ucb-model}
 # estimate a logistic regression model.
 ucb_model = glm(cbind(Admitted, Rejected) ~ Dept + Gender, data=ucb, family='binomial')
@@ -82,13 +94,14 @@ summary(ucb_model)
 
 Diagnostics are especially difficult to interpret for logistic regression models with a small amount of data. These look only OK. According to the model summary, there are significant differences in admission rates by departments and not by gender.
 
-For a logistic regression model, the estimated coefficients are reported as log odds ratios. A log odds ratio greater than zero corresponds to probability greater than 50%, and vice versa. Both `Dept` and `Gender` are categorical, so you can figure the estimated log odds ratio for a particular combination by adding the relevant rows from the summary table. The default level of this combination is `Male` and `DeptA`.
+For a logistic regression model, the estimated coefficients are reported as
+**log odds ratios**. A log odds ratio greater than zero corresponds to
+probability greater than 50%, and vice versa. Both `Dept` and `Gender` are
+categorical, so you can figure out the estimated log odds ratio for a
+particular combination by adding the relevant rows from the summary table. The
+default level of this combination is `Male` and `DeptA`.
 
 <!---This data has often been used to illustrate Simpson's Paradox, because overall men were admitted at a greater rate than women, but this may be because women applied to more selective departments. --->
-
-
-
-
 
 <!---
 ## Poisson Regression - Effectiveness of Bug Sprays
@@ -103,6 +116,3 @@ plot(model_spray)
 
 
 ...)
-
-
-

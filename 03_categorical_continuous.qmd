@@ -1,7 +1,10 @@
 # Categorical features
+
 Categorical data are a common occurrence in regression modeling. These are any data that consist of categories rather than numbers. For instance, in a forestry experiment, you may thin the trees in some plots and do a prescribed burn in others. "Prescribed burn" and "thinning" aren't numerical values, they are categories of treatment.
 
-There is a grey area where categories are ordered, like low, medium, high. We will talk about two ways to handle those.
+Sometimes categories have a natural order, like low, medium, high, which blurs
+the distinction between categorical and numerical data. We'll also cover ways
+to handle these.
 
 ```{r hidden-load}
 #| echo: false
@@ -28,7 +31,7 @@ named.contr.sum<-function(x, ...) {
         stop("cannot create names with integer value. Pass factor levels")
     }
     x<-contr.sum(x, ...)
-    colnames(x) <- apply(x,2,function(x) 
+    colnames(x) <- apply(x,2,function(x)
         paste(names(x[x>0]), "mean", sep="-")
     )
     x
@@ -37,13 +40,24 @@ named.contr.sum<-function(x, ...) {
 
 
 ## Factors
-In R, categorical variables are called *factors*. Deep down in the machinery of a regression model, factor effects are handled the same way as continuous features But to fully appreciate this, you have to understand that the factors are coded differently than continuous features. To begin, we should note that linear regression for factor variables is also a kind of scatterplot smoother. Let's look at an example:
+
+In R, categorical variables are called **factors**. Deep down in the machinery
+of a regression model, factor effects are handled the same way as continuous
+features. To fully appreciate this, you have to understand that factors are
+coded differently than continuous features. To begin, note that linear
+regression for factor variables is also a kind of scatterplot smoother. Let's
+look at an example:
 
 ### Penguin body mass
-The plot shows the mass of penguins measured at the Palmer Station LTER site in Antarctica, with the data coming from Allison Horst's [`palmerpenguins` package](https://allisonhorst.github.io/palmerpenguins/).
+
+The plot below shows the mass of penguins measured at the Palmer Station LTER
+site in Antarctica, with the data coming from Allison Horst's [`palmerpenguins`
+package][penguins].
+
+[penguins]: https://allisonhorst.github.io/palmerpenguins/
 
 ```{r penguins-spp-example}
-ggplot(penguins) + 
+ggplot(penguins) +
   aes(x=species, y=body_mass_g) +
   geom_point() +
   ggtitle("Body mass of penguins by species") +
@@ -84,13 +98,24 @@ print(penguin_means)
 Notice that the fitted value of the `(Intercept)` is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the `Estimate` column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.
 
 ### Design matrix
+
 The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The `model.matrix()` is the function that R uses internally to prepare data for an `lm()`, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the reference level because it appears first in the data.
 
 ```{r penguin-model-matrix}
 tail(model.matrix(penguin_lm))
 ```
 
-Here, we have three terms: `(Intercept)`, `speciesChinstrap`, and `speciesGentoo`. So to calculate the mass that is estimated for row 12, we will add `1 * (Intercept) + 1 * speciesGentoo`. Since the effect `(Intercept)` is the average mass of the Adelie penguins, the effect `speciesGentoo` must be the difference between the mean mass of Gentoo penguins and the mean mass of Adelie penguins.  Why no term for `speciesAdelie`? It's because the fit would then depend on how mass was apportioned between the penguin species and the intercept. You could increase the intercept by 10 grams and reduce all three species estimates by 10 grams and end up with the same model fit, despite different effects. The computer has no way of deciding between those options, because it just optimizing the model fit.
+Here, we have three terms: `(Intercept)`, `speciesChinstrap`, and
+`speciesGentoo`. So to calculate the mass that is estimated for row 12, we will
+add `1 * (Intercept) + 1 * speciesGentoo`. Since the effect `(Intercept)` is
+the average mass of the Adelie penguins, the effect `speciesGentoo` must be the
+difference between the mean mass of Gentoo penguins and the mean mass of Adelie
+penguins.  Why no term for `speciesAdelie`? It's because the fit would then
+depend on how mass was apportioned between the penguin species and the
+intercept. You could increase the intercept by 10 grams and reduce all three
+species estimates by 10 grams and end up with the same model fit, despite
+different effects. The computer has no way of deciding between those options,
+because it is just minimizing the model error.
 
 You don't have to set one factor level to be the reference for estimation, but that goes beyond the scope of this introductory workshop. You may need to change which level is the reference, and that is within our scope. R has a function `relevel()`, which takes the argument `ref=`, which specifies the reference level of a factor. Here is how it would work to set Gentoo as the reference level:
 
@@ -112,7 +137,11 @@ predict(releveled_penguin_model, pred_df)
 
 ## Combining continuous and categorical
 
-Of course, continuous and categorical features don't have to be kept separate. We'll return to our original example and consider whether the relationship between a penguin's mass and its flipper length is different between the three species. You combine categorical and continuous features by adding them together in the formula. 
+Of course, continuous and categorical features don't have to be kept separate.
+We'll return to our original example and consider whether the relationship
+between a penguin's mass and its flipper length is different between the three
+species. You combine categorical and continuous features by adding them
+together in the model formula. 
 
 ```{r no_interation_model}
 # create a model with both species and flipper length as features
@@ -128,7 +157,7 @@ Here is a visualization of the model fit:
 penguins$nointeract = predict(combo_model, newdata=penguins)
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g, color=species) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Penguin mass (g)") +
   geom_smooth(data=penguins,
@@ -151,7 +180,7 @@ plot(combo_model)
 summary(combo_model)
 ```
 
-The summary tells up how big are the differences between the species-specific intercepts. The diagnostic plots still exhibit a "U" shape in the Fitted Vs. Residual plot, so we haven't yet found an ideal regression model for this data.
+The summary shows how big the differences are between the species-specific intercepts. The diagnostic plots still exhibit a "U" shape in the Fitted Vs. Residual plot, so we haven't yet found an ideal regression model for this data.
 
 ## Interactions
 
@@ -163,7 +192,7 @@ We can improve this model further by adding an interaction between the species a
 #| message: false
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g, color=species) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Penguin mass (g)") +
   geom_smooth(method='lm', se=FALSE)
