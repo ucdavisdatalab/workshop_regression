@@ -29,6 +29,7 @@ This distinction between the cohort and the specific classes is why we call the 
 
 
 
+
 ```{r hidden-load}
 #| echo: false
 #| include: false
@@ -48,26 +49,52 @@ penguins_small = subset(penguins, !is.na(body_mass_g)) |>
 
 
 ## Fixed effects
-The effects we've seen so far are often called "fixed effects". That's because the treatment is expected to have the same effect if the experiment were repeated. That fixed value is in contrast to "random effects", which are taken from a random distribution and are expected to be different in a hypothetical repetition of the experiment.
 
+The effects we've seen so far are often called **fixed effects**. That's
+because the treatment is expected to have the same effect if the experiment
+were repeated. That fixed value is in contrast to **random effects**, which are
+taken from a random distribution and are expected to be different in a
+hypothetical repetition of the experiment.
+
+<!-- FIXME: Same header appears twice. -->
+
+## Random effects
+
+Real-world science often sees data grouped according to some known structure of
+the study. For instance, in an agricultural experiment, the yield of plants
+from the same field is generally more alike than plants from different fields,
+even if all fields in question received the same treatment. Why? Maybe the soil
+was generally better quality in one field, or one got more rain than the other,
+or the treatments weren't applied with perfect consistency across fields.
+
+In order to account for factors like these, agricultural researchers divide
+fields into plots and apply a different treatment to each plot. Then two
+measurements from the same plot are generally more alike than two from
+different plots, even in the same field. By the same reasoning, measurements
+from two plots in the same field are generally more alike than measurements
+from two plots in different fields. This is an example of hierarchical data:
+there are several individual measurements from plants in each plot. We say that
+the measurements are nested within the plots, and the plots are nested within
+the fields. 
 
 
 ## Random effects
-Real-world science often sees data grouped according to some known structure of the study. For instance, in an agricultural experiment, the yield of plants from the same field is generally more alike than plants from different fields, even fields that received the same treatment. Why? Maybe the soil was generally better quality in one field, or one got more rain than the other, or the treatments weren't applied perfectly consistently between fields.
 
-In order to account for factors like these, agricultural experiments often divide a field into plots, and apply different treatments in each plot. In that case, the yields from the same plot are more alike than from other plots, even on the same field. But they are generally more alike within the same field than plots from different fields. This is an example of hierarchical data: there are several individual measurements of yield from plants in each plot. We say that the measurements are nested within the plots, and meanwhile the plots are nested within fields. 
-
-
-
-
-## Random effects
 Random effects are a way to account for variation in data that arises due to grouping or clustering of observations. They are used in regression models when there is a hierarchy or structure in the data, and the observations within each group are expected to be correlated.
 
 For example, in a study involving students from different schools, random effects can be used to capture the inherent differences between schools, which may affect the dependent variable (e.g., test scores). Random effects are modeled as deviations from the overall population-level effects.
 
 
-## Using random effects in regression 
-There are several R packages that implement random effects in regression. `lme4` is the most-used and `brms` is the Bayesian equivalent (which also offers some great features that aren't available in `lme4`.) Both of them write the model in just about the same way as the `lm()` and `glm()` functions that you've already seen. The only difference is that the random effects need to be specified using a special notation: they are written as two parts wrapped in parentheses. The first part indicates the effect that changes with the grouping factor, and the second part indicates what variable is the grouping factor.
+## Using random effects in regression
+
+There are several R packages that implement random effects in regression.
+`lme4` is the most-used and `brms` is the Bayesian equivalent (which also
+offers some great features that aren't available in `lme4`.) Both of them use a
+formula syntax similar to the `lm()` and `glm()` functions that you've already
+seen. The only difference is that the random effects need to be specified using
+a special notation: they are written as two parts wrapped in parentheses. The
+first part indicates the effect that changes with the grouping factor, and the
+second part indicates what variable is the grouping factor.
 
 ```{r random-effects-model}
 re_model = lmer(Reaction ~ Days + (1|Subject), data=sleepstudy)
@@ -91,7 +118,20 @@ ggplot(sleepstudy) +
 
 
 ### Random intercepts and slopes
-The most common kind of random effect is a random intercept. That means the effect of a grouping level is a consistent adjustment (increase or decrease) to the response. But random effects can be more complicated, such random slopes - where the effect of a continuous variable changes according to the grouping variable. Here's an example using the sleep study data: the difference is that now the random effect of subject is not only that each subject was has somewhat quicker or slower reflexes that change by the same amount each day. Instead, each subject has somewhat quicker or slower reflexes that change by a personally unique amount each day (meanwhile, we have still estimated the fixed effect of days - which is the amount that an average person's reaction time slowed down with each day of sleep deprivation.
+
+The most common kind of random effect is a **random intercept**. That means the
+effect of a grouping level is a consistent adjustment (increase or decrease) to
+the response. But random effects can be more complicated, such **random
+slopes** - where the effect of a continuous variable changes according to the
+grouping variable.
+
+Here's an example using the sleep study data: the difference is that now the
+random effect of subject is not only that each subject was has somewhat quicker
+or slower reflexes that change by the same amount each day. Instead, each
+subject has somewhat quicker or slower reflexes that change by a personally
+unique amount each day (meanwhile, we have still estimated the fixed effect of
+days - which is the amount that an average person's reaction time slowed down
+with each day of sleep deprivation.
 
 ```{r random-slope-model}
 random_slope_model = lmer(Reaction ~ Days + (1 + Days|Subject), data=sleepstudy)
@@ -123,14 +163,34 @@ summary(random_slope_model)
 
 
 ## When to use fixed vs random effects
-There isn't a single, definitive check that will tell you when to use random or fixed effects. I have come to think of random effects as a form of "partial pooling" - a way to do something between te extremes of either treating each observation as independent, or fully pooling all observations of each group by only using group means as data. With random effects, the amount of pooling is adaptive: where the differences between groups are large compared to the difference between observations within a group, then the random effect for group will have a big influence. But where the differences between individual observations is large compared to 
 
+<!-- FIXME: This paragraph ends mid-sentence. -->
+
+There isn't a single, definitive check that will tell you when to use random or
+fixed effects. I have come to think of random effects as a form of "partial
+pooling" - a way to do something between the extremes of either treating each
+observation as independent, or fully pooling all observations of each group by
+only using group means as data. With random effects, the amount of pooling is
+adaptive: where the differences between groups are large compared to the
+difference between observations within a group, then the random effect for
+group will have a big influence. But where the differences between individual
+observations is large compared to 
 
 
 ## Examples:
 
 ### Orange trees
-For this example, we will look at the growth of orange trees. The data is in the built-in dataset `Orange`, which you can import via $data(Orange)$. There are three columns: `Tree`, which is an ID of which orange tree is being measured; `age`, which is the number of days since Deember 31, 1969; and `circumference`, which is the circumference of the tree's trunk (in mm). There are five trees with seven observations each, so 35 rows of data. First, plot the data:
+
+For this example, we will investigate orange tree growth using the built-in
+data set `Orange`. You can load the data set via `data(Orange)`. There are
+three columns:
+
+1. `Tree`, which is an ID of which orange tree is being measured;
+2. `age`, which is the number of days since Deember 31, 1969;
+3. `circumference`, which is the circumference of the tree's trunk (in mm).
+
+There are five trees with seven observations each, so there are 35 rows of
+data. First, plot the data:
 
 ```{r orange-raw-plot}
 # plot the orange tree data
@@ -145,9 +205,3 @@ This looks like (fairly) linear growth with the same intercept (all the trees ap
 model_orange = lmer(circumference ~ (age - 1 | Tree), data=Orange)
 summary(model_orange)
 ```
-
-
-
-
-
-

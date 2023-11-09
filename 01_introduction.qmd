@@ -8,12 +8,14 @@ Anyway, you've probably heard of and tried regression. Now you're here. Why? I d
 ## Data
 The data for a regression model are typically in a spreadsheet format, where each row of data is called an *observation* and each column is called a *feature* (aka *predictor*, *input*, or *independent variable*). The column that is the outcome of the model is called the *response* (aka *output*, *target*, or *dependent variable*). Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
 
-## Preparation
+The data for a linear model are typically in a tabular format (imagine a spreadsheet), where each row of data is called an **observation** and each column is called a **feature**. The column that is the outcome of the model is called the **response**. Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
+
+## Plot before you model!
 Your computer will do whatever you tell it to do, even if it's not a good idea. With this great power comes the responsibility to think, and to check your assumptions.
 
 The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.
 
-The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.
+The Datasaurus Dozen are a collection of thirteen data sets. Each consists of two features (x and y) that have the same means, variances, and correlations.
 
 ```{r install-datasaurus}
 #| include: false

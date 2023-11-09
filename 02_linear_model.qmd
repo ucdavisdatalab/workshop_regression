@@ -1,11 +1,12 @@
 # Linear Regression
-Let's say what we mean by a "linear model". This is an equation that describes the response as a linear function of some feature(s).
+Let's say what we mean by a **linear model**. This is an equation that describes the response as a linear function of some feature(s).
 
 Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.
 
 Linear regression means drawing a straight line through a scatterplot of the data. That's easy to picture when there is a single feature, so let's look at an example.
 
 ## Palmer penguins data
+
 This first example will use data from the [`palmerpenguins` package](https://allisonhorst.github.io/palmerpenguins/). It was created by Allison Horst and contains observations of 344 penguins from the Palmer Station Antarctica LTER site. There are eight features: year, species, sex, island, bill width (mm), bill length (mm), flipper length (mm), and body mass (g). We'll begin by installing and then importing the `palmerpenguins` package, and then loading the data.
 
 ```{r load-penguins}
@@ -44,7 +45,7 @@ Suppose we think that all penguins grow in a certain proportional way. Then we m
 #| message: false
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Penguin mass (g)") +
   geom_smooth(method='lm', se=FALSE)
@@ -53,7 +54,10 @@ ggplot(penguins) +
 I've added a regression line to illustrate the assumed linear relationship. Obviously, you'd want your model of the response to fit perfectly but there's no line that would go through all the points.
 
 ## Residuals
-We have a special term for the difference between the fitted line and the dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:
+
+We have a special term for the difference between the fitted line and the dots.
+We call the differences **residuals**, and there is one per dot. The difference
+is calculated as the vertical distance, as shown here:
 
 ```{r residual-example}
 #| echo: false
@@ -61,7 +65,7 @@ We have a special term for the difference between the fitted line and the dots. 
 #| message: false
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Penguin mass (g)") +
   geom_smooth(method='lm', se=FALSE) +
@@ -91,14 +95,14 @@ library(cowplot)
 
 regression_plot = ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Penguin mass (g)") +
   geom_smooth(method='lm', se=FALSE)
 
 mean_plot = ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Penguin mass (g)") +
   geom_hline(
@@ -109,9 +113,13 @@ mean_plot = ggplot(penguins) +
 cowplot::plot_grid(regression_plot, mean_plot, ncol=2)
 ```
 
-A large negative error may be a good thing for "minimizing" error, but we don't want that because the error is large. So the errors are *squared* before adding them together. This is the origin of terms you might have heard, like the sum of squared errors or the mean squared error.
+A large negative error may be a good thing for "minimizing" error, but we don't
+want that because the error is large. So the errors are *squared* before adding
+them together. This is the origin of terms you might have heard, like the **sum
+of squared errors** or the **mean squared error**.
 
 ### The `lm()` function in R
+
 The function to estimate a linear regression model in R is called `lm()`. We'll get quite familiar with the function during this workshop. Now let's use it to estimate the regression line in our penguin body size example.
 
 ```{r lm-first-example}
@@ -135,15 +143,16 @@ In contrast, the coefficient p-values, reported as `Pr(>|t|)` in the `Coefficien
 
 
 ## Assumptions of linear regression
+
 There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these:
 
 1. Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs. residual plot is evidence that the linearity assumption may be wrong. 
 
-2. Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.
+2. Normality: Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.
 
 3. Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot. 
 
-4. The residuals must be independent of each other. You can't actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.
+4. Independence: The residuals must be independent of each other. You can't actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.
 
 Let's check the assumptions on the penguin body size model:
 
@@ -170,13 +179,13 @@ We can reasonably assume that penguins with longer flippers and heavier bodies a
 #| message: false
 bill_plot_1 = ggplot(penguins) +
   aes(x=flipper_length_mm, y=bill_length_mm) +
-  geom_point() + 
+  geom_point() +
   xlab("Flipper length (mm)") +
   ylab("Bill length (mm)")
 
 bill_plot_2 = ggplot(penguins) +
   aes(x=body_mass_g, y=bill_length_mm) +
-  geom_point() + 
+  geom_point() +
   xlab("Body mass (g)") +
   ylab("Bill length (mm)")
 
@@ -195,11 +204,19 @@ summary(correlated_model)
 The estimated coefficient has changed from `r round(coef(penguin_mass_model)[[2]], 1)` to `round(coef(correlated_model)[[2]], 1)` and the standard error of the estimated coefficient for `flipper_length_mm` is `r summary(correlated_model)$coefficients[["flipper_length_mm", "Std. Error"]] |> round(1)`, which is 32% greater than the previous standard error of `r summary(penguin_mass_model)$coefficients[["flipper_length_mm", "Std. Error"]] |> round(1)`.
 
 ### Which features to include?
-A common question is how to decide which features to include in a model. A definitive answer is probably impossible, since the "best" model depends on the goal of the analysis, and model selection frequently ends in marginal and somewhat subjective decisions. In the simplest terms, the correct features for your model are the ones that are relevant to your analysis.
 
+A common question is how to decide which features to include in a model.
+There's no definitive answer, since the "best" model depends on the goal of the
+analysis, and model selection frequently ends in marginal and somewhat
+subjective decisions. In the simplest terms, the correct features for your
+model are the ones that are relevant to your analysis.
 
-
-If your goal is to study is to understand the effect that some specific features have on the response, then it's best to decide what those are before trying to estimate the model, and of course you have to keep in mind assumption (1) for linear models: "The actual relationship between the features and the response is linear." This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.
+If your goal is to study the relationship between some specific features and
+the response, then it's best to select those features before fitting a model,
+and of course you have to keep in mind assumption (1) for linear models: "The
+actual relationship between the features and the response is linear." This is a
+theory-driven approach to model selection, because you begin with an idea of
+the model you want to fit, and then tell the computer to estimate it.
 
 There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data. In order to mitigate that risk, a portion of the data has to be held out from the model fitting, to test the model with.
 
@@ -222,6 +239,3 @@ plot(seatbelt_model)
 
 
 --->
-
-
-
