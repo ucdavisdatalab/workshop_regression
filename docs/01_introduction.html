@@ -127,7 +127,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Regression</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
   </div>
 </li>
     </ul>
@@ -141,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a></li>
-  <li><a href="#preparation" id="toc-preparation" class="nav-link" data-scroll-target="#preparation">Preparation</a></li>
+  <li><a href="#plot-before-you-model" id="toc-plot-before-you-model" class="nav-link" data-scroll-target="#plot-before-you-model">Plot before you model!</a></li>
   </ul>
 </nav>
     </div>
@@ -171,12 +171,13 @@ ul.task-list li input[type="checkbox"] {
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
 <p>The data for a regression model are typically in a spreadsheet format, where each row of data is called an <em>observation</em> and each column is called a <em>feature</em> (aka <em>predictor</em>, <em>input</em>, or <em>independent variable</em>). The column that is the outcome of the model is called the <em>response</em> (aka <em>output</em>, <em>target</em>, or <em>dependent variable</em>). Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
+<p>The data for a linear model are typically in a tabular format (imagine a spreadsheet), where each row of data is called an <strong>observation</strong> and each column is called a <strong>feature</strong>. The column that is the outcome of the model is called the <strong>response</strong>. Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
 </section>
-<section id="preparation" class="level2">
-<h2 class="anchored" data-anchor-id="preparation">Preparation</h2>
+<section id="plot-before-you-model" class="level2">
+<h2 class="anchored" data-anchor-id="plot-before-you-model">Plot before you model!</h2>
 <p>Your computer will do whatever you tell it to do, even if it’s not a good idea. With this great power comes the responsibility to think, and to check your assumptions.</p>
 <p>The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.</p>
-<p>The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.</p>
+<p>The Datasaurus Dozen are a collection of thirteen data sets. Each consists of two features (x and y) that have the same means, variances, and correlations.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 13 × 6

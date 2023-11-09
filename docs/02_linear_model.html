@@ -163,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Regression</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
   </div>
 </li>
     </ul>
@@ -210,7 +210,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>Let’s say what we mean by a “linear model”. This is an equation that describes the response as a linear function of some feature(s).</p>
+<p>Let’s say what we mean by a <strong>linear model</strong>. This is an equation that describes the response as a linear function of some feature(s).</p>
 <p>Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.</p>
 <p>Linear regression means drawing a straight line through a scatterplot of the data. That’s easy to picture when there is a single feature, so let’s look at an example.</p>
 <section id="palmer-penguins-data" class="level2">
@@ -272,7 +272,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="residuals" class="level2">
 <h2 class="anchored" data-anchor-id="residuals">Residuals</h2>
-<p>We have a special term for the difference between the fitted line and the dots. We call the differences residuals, and there is one per dot. The difference is calculated as the vertical distance, as shown here:</p>
+<p>We have a special term for the difference between the fitted line and the dots. We call the differences <strong>residuals</strong>, and there is one per dot. The difference is calculated as the vertical distance, as shown here:</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="02_linear_model_files/figure-html/residual-example-1.png" class="img-fluid" width="672"></p>
@@ -287,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="02_linear_model_files/figure-html/penguins-errors-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>A large negative error may be a good thing for “minimizing” error, but we don’t want that because the error is large. So the errors are <em>squared</em> before adding them together. This is the origin of terms you might have heard, like the sum of squared errors or the mean squared error.</p>
+<p>A large negative error may be a good thing for “minimizing” error, but we don’t want that because the error is large. So the errors are <em>squared</em> before adding them together. This is the origin of terms you might have heard, like the <strong>sum of squared errors</strong> or the <strong>mean squared error</strong>.</p>
 <section id="the-lm-function-in-r" class="level3">
 <h3 class="anchored" data-anchor-id="the-lm-function-in-r">The <code>lm()</code> function in R</h3>
 <p>The function to estimate a linear regression model in R is called <code>lm()</code>. We’ll get quite familiar with the function during this workshop. Now let’s use it to estimate the regression line in our penguin body size example.</p>
@@ -320,7 +320,7 @@ F-statistic:  1071 on 1 and 340 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>There is a bit of unique R code in the call to <code>lm()</code>: it uses R’s formula syntax. A formula in R has the response variable on the left of a tilde (<code>~</code>) and predictors on the right. You may see it in other contexts but its most common use is to specify the variables of a regression formula. Having used the <code>lm()</code> function to estimate the regression model, we then use the <code>summary()</code> function to inspect the model fit. Let’s dig into the <code>summary()</code> output.</p>
 <p>The important parts of the <code>summary()</code> results are the <code>Coefficients:</code> and below. The first two parts of the <code>summary()</code> result (<code>Call:</code> and <code>Residuals:</code>) are usually not very interesting. At this point, you probably recognize that the <code>Call:</code> is repeating back the function call that created the model, and the <code>Residuals:</code> section tells you about the size of the residuals.</p>
-<p>Starting with <code>Coefficients:</code> we begin to learn about the model fit. You remember that the linear model fits a straight line to the data. And you might also know that you can describe a line by its slope and intercept, as in <span class="math inline">\(y = ax + b\)</span>. In that equation, <span class="math inline">\(b\)</span> is the intercept and <span class="math inline">\(a\)</span> is the slope, also known as the coefficient of <span class="math inline">\(x\)</span>. The coefficient of <code>flipper_length_mm</code> functions as the slope of our line, and it is listed in the <code>Estimate</code> column. As you might guess, the intercept of the estimated line is listed as under the <code>Estimate</code> column and the <code>(Intercept)</code> row.</p>
+<p>Starting with <code>Coefficients:</code> we begin to learn about the model fit. You remember that the linear model fits a straight line to the data. And you might also know that you can describe a line by its slope and intercept, as in <span class="math inline">\(y = mx + b\)</span>. In that equation, <span class="math inline">\(b\)</span> is the intercept and <span class="math inline">\(m\)</span> is the slope, also known as the <strong>coefficient</strong> of <span class="math inline">\(x\)</span>. The coefficient of <code>flipper_length_mm</code> functions as the slope of our line, and it is listed in the <code>Estimate</code> column. As you might guess, the intercept of the estimated line is listed as under the <code>Estimate</code> column and the <code>(Intercept)</code> row.</p>
 <p>The <code>Std. Error</code> column is an estimate of uncertainty in the coefficient estimates. The <code>t value</code> column is just the <code>Estimate</code> divided by the <code>Std. Error</code>, and it is used to calculate the <code>Pr(&gt;|t|)</code> column (better known as the coefficient p-value.)</p>
 <p>The remaining information (<code>Residual standard error</code>, <code>degrees of freedom</code>, <code>Multiple R-squared</code>, <code>Adjusted R-squared</code>, <code>F-statistic</code>, and <code>p-value</code>) is beyond this introductory workshop. Just know that the p-value reported here is almost useless.</p>
 <p>In contrast, the coefficient p-values, reported as <code>Pr(&gt;|t|)</code> in the <code>Coefficients:</code> table, are often the main focus of analysis. Making use of these p-values and interpreting the asterisks as indicators of statistical significance depends on proper use of the <code>lm()</code> function. In particular, you must decide which variables to use before fitting a model, and you can only try once - otherwise, the p-values will be biased by peeking at the result before doing the test.</p>
@@ -331,9 +331,9 @@ F-statistic:  1071 on 1 and 340 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these:</p>
 <ol type="1">
 <li><p>Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs.&nbsp;residual plot is evidence that the linearity assumption may be wrong.</p></li>
-<li><p>Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.</p></li>
+<li><p>Normality: Check that the residuals have a normal distribution. You can check this via the Q-Q plot, which should have all the dots in an approximately straight line.</p></li>
 <li><p>Constant/equal residual variance: The residuals should have the same variability, also called the scale. Confirm this by the location-scale plot.</p></li>
-<li><p>The residuals must be independent of each other. You can’t actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.</p></li>
+<li><p>Independence: The residuals must be independent of each other. You can’t actually check this from the data, so you have to think carefully about how the value of one residual might depend upon others (for instance if they are measured at locations that touch, maybe there is something that affects both.) Data collection should be planned in order to have independent responses.</p></li>
 </ol>
 <p>Let’s check the assumptions on the penguin body size model:</p>
 <div class="cell">
@@ -389,8 +389,8 @@ F-statistic: 536.6 on 2 and 339 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>The estimated coefficient has changed from 49.7 to <code>round(coef(correlated_model)[[2]], 1)</code> and the standard error of the estimated coefficient for <code>flipper_length_mm</code> is 2, which is 32% greater than the previous standard error of 1.5.</p>
 <section id="which-features-to-include" class="level3">
 <h3 class="anchored" data-anchor-id="which-features-to-include">Which features to include?</h3>
-<p>A common question is how to decide which features to include in a model. A definitive answer is probably impossible, since the “best” model depends on the goal of the analysis, and model selection frequently ends in marginal and somewhat subjective decisions. In the simplest terms, the correct features for your model are the ones that are relevant to your analysis.</p>
-<p>If your goal is to study is to understand the effect that some specific features have on the response, then it’s best to decide what those are before trying to estimate the model, and of course you have to keep in mind assumption (1) for linear models: “The actual relationship between the features and the response is linear.” This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.</p>
+<p>A common question is how to decide which features to include in a model. There’s no definitive answer, since the “best” model depends on the goal of the analysis, and model selection frequently ends in marginal and somewhat subjective decisions. In the simplest terms, the correct features for your model are the ones that are relevant to your analysis.</p>
+<p>If your goal is to study the relationship between some specific features and the response, then it’s best to select those features before fitting a model, and of course you have to keep in mind assumption (1) for linear models: “The actual relationship between the features and the response is linear.” This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.</p>
 <p>There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data. In order to mitigate that risk, a portion of the data has to be held out from the model fitting, to test the model with.</p>
 <!---
 
