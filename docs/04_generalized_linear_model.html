@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Practical Introduction to Regression Modeling in R - Generalized how?</title>
+<title>A Practical Introduction to Regression Modeling in R - Generalized Linear Regression</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,7 +64,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./05_fixed_random_effects.html" rel="next">
 <link href="./03_categorical_continuous.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -108,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_generalized_linear_model.html"><span class="chapter-title">Generalized how?</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_generalized_linear_model.html"><span class="chapter-title">Generalized Linear Regression</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -161,17 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Generalized how?</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./06_conclusion.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Wrapping Up</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Generalized Linear Regression</span></a>
   </div>
 </li>
     </ul>
@@ -184,9 +173,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#generalized-linear-regression" id="toc-generalized-linear-regression" class="nav-link active" data-scroll-target="#generalized-linear-regression">Generalized linear regression</a>
+  <li><a href="#logistic-regression---uc-berkeley-admissions" id="toc-logistic-regression---uc-berkeley-admissions" class="nav-link active" data-scroll-target="#logistic-regression---uc-berkeley-admissions">Logistic Regression - UC Berkeley Admissions</a></li>
+  <li><a href="#poisson-regression---effectiveness-of-bug-sprays" id="toc-poisson-regression---effectiveness-of-bug-sprays" class="nav-link" data-scroll-target="#poisson-regression---effectiveness-of-bug-sprays">Poisson Regression - Effectiveness of Bug Sprays</a>
   <ul class="collapse">
-  <li><a href="#logistic-regression---uc-berkeley-admissions" id="toc-logistic-regression---uc-berkeley-admissions" class="nav-link" data-scroll-target="#logistic-regression---uc-berkeley-admissions">Logistic Regression - UC Berkeley Admissions</a></li>
+  <li><a href="#negative-binomial-regression" id="toc-negative-binomial-regression" class="nav-link" data-scroll-target="#negative-binomial-regression">Negative-binomial regression</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -196,7 +186,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Generalized how?</span></h1>
+<h1 class="title"><span class="chapter-title">Generalized Linear Regression</span></h1>
 </div>
 
 
@@ -225,6 +215,7 @@ survivalists$podium = survivalists$result <= 3
 :::
 
 
+## Generalized how?
 The linear regression model fits a straight line through scatterplot data. That's a very restrictive model. The generalized linear model begins to loosen some of the restrictions by allowing the response to have a distribution other than the normal distribution.
 
 ## Distributions
@@ -294,16 +285,12 @@ To view and interpret a GLM, use the `summary()` function, just as you did for a
 
 
 --->
-<section id="generalized-linear-regression" class="level1">
-<h1>Generalized linear regression</h1>
 <p>We won’t put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor.</p>
 <ul>
-<li>Response distribution is different. As a result:
-<ul>
+<li>The distribution of the residuals isn’t normal. Several types of residuals can be used for a GLM — R defaults to the deviance residual.</li>
 <li>Response variance is no longer assumed equal (when variance depends on mean).</li>
 <li>The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what’s called a “Link Function”).</li>
 <li>Thus, diagnostics have to change.</li>
-</ul></li>
 </ul>
 <section id="logistic-regression---uc-berkeley-admissions" class="level3">
 <h3 class="anchored" data-anchor-id="logistic-regression---uc-berkeley-admissions">Logistic Regression - UC Berkeley Admissions</h3>
@@ -375,11 +362,23 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <p>Diagnostics are especially difficult to interpret for logistic regression models with a small amount of data. These look only OK. According to the model summary, there are significant differences in admission rates by departments and not by gender.</p>
 <p>For a logistic regression model, the estimated coefficients are reported as log odds ratios. A log odds ratio greater than zero corresponds to probability greater than 50%, and vice versa. Both <code>Dept</code> and <code>Gender</code> are categorical, so you can figure the estimated log odds ratio for a particular combination by adding the relevant rows from the summary table. The default level of this combination is <code>Male</code> and <code>DeptA</code>.</p>
 <!---This data has often been used to illustrate Simpson's Paradox, because overall men were admitted at a greater rate than women, but this may be because women applied to more selective departments. --->
-<p>&lt;!— ## Poisson Regression - Effectiveness of Bug Sprays</p>
-<p>Here is an example of a Poisson regression model.</p>
+</section>
+<section id="poisson-regression---effectiveness-of-bug-sprays" class="level2">
+<h2 class="anchored" data-anchor-id="poisson-regression---effectiveness-of-bug-sprays">Poisson Regression - Effectiveness of Bug Sprays</h2>
+<p>We conclude with an example using count data as a response. The <code>InsectSprays</code> dataset is built in to R so you can import it with the command <code>data(InsectSprays)</code>. It has 72 observations of two features. The two features are: the type of insecticide that was applied to a plant, and the other is a count of how many insects were found on the plant. Our goal is to determine whether the different insecticides lead to a consistent difference in the number of insects.</p>
+<p>Plotting the data reveals that there are six insecticides in the study, with twelve observations each:</p>
+<div class="cell" data-warnings="false">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(InsectSprays)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(InsectSprays)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04_generalized_linear_model_files/figure-html/plot-InsectSprays-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see a few more things from the plot. Counts range from zero to 26, and it appears that the insecticides are in two groups: the counts for sprays 3, 4, and 5 are clustered at low counts (ony one count in this group is greater than six), while the counts for sprays 1, 2, and 6 are all at least seven. That suggests that there is a significant difference between the treatments.</p>
+<p>We can also see that the counts are more densely clustered for the lesser counts, and more spread out for the greater counts. That’s an unequal variance, so the linear model is probably not appropriate. There is a response type specifically for count data that gets more spread out as the average count grows: Poisson. Let’s fit a Poisson regression to the insecticide data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model_spray <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays, <span class="at">family=</span><span class="st">'poisson'</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model_spray <span class="ot">=</span> <span class="fu">glm</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays, <span class="at">family=</span><span class="st">'poisson'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -404,21 +403,101 @@ AIC: 376.59
 
 Number of Fisher Scoring iterations: 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_spray)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make diagnostic plots:</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>deviance_residuals <span class="ot">=</span> <span class="fu">residuals</span>(model_spray, <span class="at">type=</span><span class="st">"deviance"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(deviance_residuals)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(model_spray), deviance_residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="04_generalized_linear_model_files/figure-html/poisson-regression-insect-sprays-1.png" class="img-fluid" width="672"></p>
 </div>
+</div>
+<p>The diagnostics for this model look pretty good. The Q-Q plot may indicate slightly heavy tails, which would be a sign that the response is overdispersed for the Poisson distribution. A further check is to calculate the mean and variance for each group in the data (this is ony pratical because the model is simple and the number of levels is small). If the data has a Poisson distribution, we expect that the mean and the variance are approximately equal. Of course, real data never perfectly matches this expected relationship.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check the men-variance relationship</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(InsectSprays, spray) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean =</span> <span class="fu">mean</span>(count),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">var =</span> <span class="fu">var</span>(count))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  spray  mean   var
+  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 A     14.5  22.3 
+2 B     15.3  18.2 
+3 C      2.08  3.90
+4 D      4.92  6.27
+5 E      3.5   3   
+6 F     16.7  38.6 </code></pre>
+</div>
+</div>
+<p>In most cases, the variance is slightly greater than the mean. Only group F has variance more than twice the mean, which is a reasonable threshold for where to begin to worry.</p>
+<section id="negative-binomial-regression" class="level3">
+<h3 class="anchored" data-anchor-id="negative-binomial-regression">Negative-binomial regression</h3>
+<p>I’d probably leave the <code>InsectSprays</code> model as it is for simplicity, but it would also be reasonable to change the model to account for overdispersion. There are a lot of ways to do that, and one classic method is to model the response as a negative-binomial distribution. That requires loading the <code>MASS</code> package, which provies the <code>glm.nb()</code> function. Here’s the result:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import the MASS package</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    select</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#estimate the NB model</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>model_spray_nb <span class="ot">=</span> <span class="fu">glm.nb</span>(count <span class="sc">~</span> spray, <span class="at">data=</span>InsectSprays)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_spray_nb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm.nb(formula = count ~ spray, data = InsectSprays, init.theta = 28.09950714, 
+    link = log)
+
+Coefficients:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)  2.67415    0.09334  28.649  &lt; 2e-16 ***
+sprayB       0.05588    0.13082   0.427    0.669    
+sprayC      -1.94018    0.22733  -8.535  &lt; 2e-16 ***
+sprayD      -1.08152    0.16920  -6.392 1.64e-10 ***
+sprayE      -1.42139    0.18838  -7.545 4.52e-14 ***
+sprayF       0.13926    0.12914   1.078    0.281    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for Negative Binomial(28.0995) family taken to be 1)
+
+    Null deviance: 313.444  on 71  degrees of freedom
+Residual deviance:  74.145  on 66  degrees of freedom
+AIC: 374.22
+
+Number of Fisher Scoring iterations: 1
+
+              Theta:  28.1 
+          Std. Err.:  17.7 
+
+ 2 x log-likelihood:  -360.218 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make diagnostic plots:</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>deviance_residuals_nb <span class="ot">=</span> <span class="fu">residuals</span>(model_spray_nb, <span class="at">type=</span><span class="st">"deviance"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(deviance_residuals_nb)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(model_spray_nb), deviance_residuals_nb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04_generalized_linear_model_files/figure-html/poisson-regression-insect-sprays-2.png" class="img-fluid" width="672"></p>
+<p><img src="04_generalized_linear_model_files/figure-html/poisson-regression-insect-sprays-nb-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="cell-output-display">
-<p><img src="04_generalized_linear_model_files/figure-html/poisson-regression-insect-sprays-3.png" class="img-fluid" width="672"></p>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare the models on the basis of AIC</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(model_spray, model_spray_nb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               df      AIC
+model_spray     6 376.5892
+model_spray_nb  7 374.2179</code></pre>
 </div>
-<div class="cell-output-display">
-<p><img src="04_generalized_linear_model_files/figure-html/poisson-regression-insect-sprays-4.png" class="img-fluid" width="672"></p>
 </div>
-</div>
-<p>…)</p>
+<p>The negative-binomial model has a smaller AIC and the Q-Q lies more along the line. We should conclude that the negative-binomial model appears to be a slightly better fit for the data.</p>
 
 
 </section>
@@ -665,9 +744,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./05_fixed_random_effects.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Fixed and Random Effects</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

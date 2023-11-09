@@ -127,17 +127,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized how?</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./06_conclusion.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Wrapping Up</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Regression</span></a>
   </div>
 </li>
     </ul>
@@ -150,9 +140,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#description" id="toc-description" class="nav-link" data-scroll-target="#description">Description</a></li>
-  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning objectives</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#workshop-structure" id="toc-workshop-structure" class="nav-link" data-scroll-target="#workshop-structure">Workshop Structure</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -178,7 +169,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Invalid Date</p>
+      <p class="date">9 November, 2023</p>
     </div>
   </div>
   
@@ -188,18 +179,16 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="overview" class="level1 unnumbered">
-<h1 class="unnumbered">Overview</h1>
-</section>
-<section id="description" class="level1">
-<h1>Description</h1>
+<section id="introduction" class="level1 unnumbered">
+<h1 class="unnumbered">Introduction</h1>
 <p>Regression modeling — using input variables to predict or model the value of a response — is widely used in pretty much every field of research. Yet many graduate programs don’t include formal training in statistical modeling, and the DataLab’s office hours indicate widespread anxiety about using regression models in practice. This workshop is intended to help address that anxiety by teaching the fundamentals of using regression modeling in practice. The emphasis is on practice and intuition, with only a small amount of math. This workshop is open to all UC Davis graduate students and postdoctoral scholars. Attendance at both sessions is required. Instruction is in-person and seats are limited. A Zoom link (e.g., broadcast) will be available for those unable to attend who would like to watch live.</p>
+<section id="workshop-structure" class="level2">
+<h2 class="anchored" data-anchor-id="workshop-structure">Workshop Structure</h2>
+<p>This workshop describes itself as a practical introduction. That means you are expected to get practice with regression, so please follow along! The workshop follows the examples in this document, and we will walk through each of them live, taking time to discuss the what and why of regression modeling. Your experience will be far more rewarding if you open up a fresh file in RStudio and follow along!</p>
+<p>The first day of the workshop series will cover linear and generalized linear regression, including discussions of checking model assumptions and how to handle categorical vs.&nbsp;continuous features. The second day will focus on random effects and mixed effect modeling.</p>
+
+
 </section>
-<section id="learning-objectives" class="level1">
-<h1>Learning objectives</h1>
-<p>After this workshop, learners will be able to: - Understand the differences between linear and generalized linear regression models - Understand the difference between fixed effects and random effects in regression models - Understand how continuous and categorical variables are handled differently in regression modeling software - Implement the above-mentioned model types - Read and interpret regression summary tables - Do diagnostic checks on your regression models</p>
-
-
 </section>
 
 </main> <!-- /main -->

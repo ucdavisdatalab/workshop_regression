@@ -127,17 +127,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized how?</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Fixed and Random Effects</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./06_conclusion.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Wrapping Up</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Regression</span></a>
   </div>
 </li>
     </ul>
@@ -150,15 +140,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
-  <ul class="collapse">
-  <li><a href="#part-one" id="toc-part-one" class="nav-link" data-scroll-target="#part-one">Part one</a></li>
-  <li><a href="#part-two" id="toc-part-two" class="nav-link" data-scroll-target="#part-two">Part two</a></li>
-  </ul></li>
-  <li><a href="#the-linear-model" id="toc-the-linear-model" class="nav-link" data-scroll-target="#the-linear-model">The linear model</a>
-  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a></li>
   <li><a href="#preparation" id="toc-preparation" class="nav-link" data-scroll-target="#preparation">Preparation</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -182,62 +165,36 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>A regression model is a way to express a relationship between some response and one or more predictors. In order to estimate the model, you need to have measurements (aka observations) of the response and the predictors. We may use the following terms interchangeably:</p>
-<ul>
-<li>response</li>
-<li>response variable</li>
-<li>dependent variable</li>
-<li>output</li>
-<li>output variable</li>
-</ul>
-<p>Likewise, the following may be used interchangeably: - predictor - predictor variable - independent variable - input - input variable</p>
-<section id="outline" class="level2">
-<h2 class="anchored" data-anchor-id="outline">Outline</h2>
-<p>These are the parts of the workshop:</p>
-<section id="part-one" class="level3">
-<h3 class="anchored" data-anchor-id="part-one">Part one</h3>
-<ol type="1">
-<li>Linear model</li>
-<li>Categorical vs.&nbsp;continuous features</li>
-<li>Generalized linear model</li>
-</ol>
+<p>A regression model is a way to express a relationship between some response and one or more predictor variables. It’s such a common method of analysis that it can occasionally be difficult to remember that there is anything else to do.</p>
+<p>Nearly every day I am asked questions about regression models, and they often seem motivated by anxiety about assumptions and validity of an interpretation. I’m going to try to provide you with the tools to begin answering those questions yourself. With practice you’ll hopefully begin to develop the ability to reason about your models and how they work.</p>
+<p>Anyway, you’ve probably heard of and tried regression. Now you’re here. Why? I don’t know. Hopefully this will help!</p>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The data for a regression model are typically in a spreadsheet format, where each row of data is called an <em>observation</em> and each column is called a <em>feature</em> (aka <em>predictor</em>, <em>input</em>, or <em>independent variable</em>). The column that is the outcome of the model is called the <em>response</em> (aka <em>output</em>, <em>target</em>, or <em>dependent variable</em>). Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
 </section>
-<section id="part-two" class="level3">
-<h3 class="anchored" data-anchor-id="part-two">Part two</h3>
-<ol start="4" type="1">
-<li>Random effects nd mixed-effects models</li>
-</ol>
-<hr>
-</section>
-</section>
-<section id="the-linear-model" class="level2">
-<h2 class="anchored" data-anchor-id="the-linear-model">The linear model</h2>
-<p>Let’s say what we mean by a “linear model”. This is an equation that describes some output variable as a linear function of some input variable(s).</p>
-<p>Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.</p>
-<p>The data for a linear model are typically in a spreadsheet format, where each row of data is called an “observation” and each column is called a “feature”. The column that is the outcome of the model is called the “response”. Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
-<section id="preparation" class="level3">
-<h3 class="anchored" data-anchor-id="preparation">Preparation</h3>
+<section id="preparation" class="level2">
+<h2 class="anchored" data-anchor-id="preparation">Preparation</h2>
 <p>Your computer will do whatever you tell it to do, even if it’s not a good idea. With this great power comes the responsibility to think, and to check your assumptions.</p>
 <p>The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.</p>
 <p>The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 13 × 6
-   dataset    correlation  x_mn x_var  y_mn y_var
-   &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 away            -0.064  54.3  281.  47.8  726.
- 2 bullseye        -0.069  54.3  281.  47.8  726.
- 3 circle          -0.068  54.3  281.  47.8  725.
- 4 dino            -0.064  54.3  281.  47.8  726.
- 5 dots            -0.06   54.3  281.  47.8  725.
- 6 h_lines         -0.062  54.3  281.  47.8  726.
- 7 high_lines      -0.069  54.3  281.  47.8  726.
- 8 slant_down      -0.069  54.3  281.  47.8  726.
- 9 slant_up        -0.069  54.3  281.  47.8  726.
-10 star            -0.063  54.3  281.  47.8  725.
-11 v_lines         -0.069  54.3  281.  47.8  726.
-12 wide_lines      -0.067  54.3  281.  47.8  726.
-13 x_shape         -0.066  54.3  281.  47.8  725.</code></pre>
+   dataset    correlation x_mean x_variance y_mean y_variance
+   &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+ 1 away            -0.064   54.3       281.   47.8       726.
+ 2 bullseye        -0.069   54.3       281.   47.8       726.
+ 3 circle          -0.068   54.3       281.   47.8       725.
+ 4 dino            -0.064   54.3       281.   47.8       726.
+ 5 dots            -0.06    54.3       281.   47.8       725.
+ 6 h_lines         -0.062   54.3       281.   47.8       726.
+ 7 high_lines      -0.069   54.3       281.   47.8       726.
+ 8 slant_down      -0.069   54.3       281.   47.8       726.
+ 9 slant_up        -0.069   54.3       281.   47.8       726.
+10 star            -0.063   54.3       281.   47.8       725.
+11 v_lines         -0.069   54.3       281.   47.8       726.
+12 wide_lines      -0.067   54.3       281.   47.8       726.
+13 x_shape         -0.066   54.3       281.   47.8       725.</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="01_introduction_files/figure-html/plot-datasaurus-1.png" class="img-fluid" width="672"></p>
@@ -246,7 +203,6 @@ ul.task-list li input[type="checkbox"] {
 <p>You probably wouldn’t use a linear model for most of the panels of that plot because there isn’t a linear relationship between the feature (x-direction) and the response (y-direction). Plotting the data can also reveal problems or oddities in the data that will guide your further investigation.</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
