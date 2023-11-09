@@ -14,28 +14,8 @@ to handle these.
 library(palmerpenguins)
 library(ggplot2)
 library(dplyr)
-library(broom)
-library(knitr)
 
 data(penguins)
-penguins_small = subset(penguins, !is.na(body_mass_g)) |>
-  split(f=~species) |>
-  lapply(function(x) subset(x, c(rep(TRUE, 5), rep(FALSE, nrow(x)-5)))) |>
-  bind_rows()
-
-# define a named sunm-to-zero contrast
-named.contr.sum<-function(x, ...) {
-    if (is.factor(x)) {
-        x <- levels(x)
-    } else if (is.numeric(x) & length(x)==1L) {
-        stop("cannot create names with integer value. Pass factor levels")
-    }
-    x<-contr.sum(x, ...)
-    colnames(x) <- apply(x,2,function(x)
-        paste(names(x[x>0]), "mean", sep="-")
-    )
-    x
-}
 ```
 
 
@@ -50,13 +30,11 @@ look at an example:
 
 ### Penguin body mass
 
-The plot below shows the mass of penguins measured at the Palmer Station LTER
-site in Antarctica, with the data coming from Allison Horst's [`palmerpenguins`
-package][penguins].
-
-[penguins]: https://allisonhorst.github.io/palmerpenguins/
+Returning to the `palmerpenguins` dataset, the plot below shows the mass of penguins of three different species.
 
 ```{r penguins-spp-example}
+#| warning: false
+#| message: false
 ggplot(penguins) +
   aes(x=species, y=body_mass_g) +
   geom_point() +
@@ -64,10 +42,9 @@ ggplot(penguins) +
   ylab("Mass (g)")
 ```
 
-Look carefully at the x-axis and you'll see that the coordinates are species names, not numbers. A line drawn to fit the points would imply that there is a specific order to the species and a specific spacing between them, and that there are some intermediate values where the mass would be somewhere between the known species. But none of those are true. 
+Look carefully at the x-axis and you'll see that the coordinates are species names, not numbers. A line drawn to fit the points would imply that there is an order to the species, and that there are some intermediate values between the species.
 
 ```{r penguin-factor-example-smoothed}
-#| eval: false
 #| warning: false
 #| message: false
 ggplot(penguins) +
@@ -82,17 +59,14 @@ Clearly, we need to treat the species as categories, rather than as coordinates 
 
 ```{r penguin-mass_model}
 penguin_lm = lm(body_mass_g ~ species, data=penguins)
-tidy(penguin_lm) |> kable(digits=2)
+summary(penguin_lm)
 ```
 
 Now let's see the mean masses of the three species.
 
 ```{r penguin-species-mass}
-cat("Mean mass by species:\n")
-penguin_means = with(penguins_small, split(body_mass_g, species)) |>
-  sapply(mean, na.rm=TRUE) |>
-  round(2)
-print(penguin_means)
+group_by(penguins, species) |>
+  summarize(mass = mean(body_mass_g, na.rm=TRUE))
 ```
 
 Notice that the fitted value of the `(Intercept)` is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the `Estimate` column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.
@@ -170,9 +144,9 @@ As you can see, adding a categorical factor to the model has resulted in a verti
 
 
 ```{r analyze-no-interactions}
-# plot the model diagnostics
 #| warning: false
 #| message: false
+# plot the model diagnostics
 layout(matrix(1:4, 2, 2))
 plot(combo_model)
 
