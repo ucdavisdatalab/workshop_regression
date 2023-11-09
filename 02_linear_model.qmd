@@ -1,4 +1,8 @@
 # Linear Regression
+Let's say what we mean by a "linear model". This is an equation that describes the response as a linear function of some feature(s).
+
+Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.
+
 Linear regression means drawing a straight line through a scatterplot of the data. That's easy to picture when there is a single feature, so let's look at an example.
 
 ## Palmer penguins data

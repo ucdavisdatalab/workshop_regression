@@ -1,7 +1,33 @@
+# Random and Mixed Effects
+
+You might have heard of terms like "random effects" and "mixed-effects models", and perhaps you, like many others before, have found the terms confusing, frightening, and overwhelming. Today we are going to sort all that out!
+
+To begin, an "effect" is another name for a regression coefficient. It's a name that makes the most intuitive sense for a categorical feature in a designed experiment, where you might say that the effect of applying fertilizer formula C to a plot is to increase the crop yield by 35 kilograms over the control treatment.
+
+That example (like everything we've seen so far) is a fixed effect, which are treated differently than random effects. A regression model can include either fixed effects, random effects, or both. A model that includes both fixed and random effects is said to have "mixed effects".
 
 
-# Fixed and Random Effects
-We have looked at several examples of regression models. For the examples, I have intentionally chosen data with a pretty simple structure: all of the observations are independent, with differences in the outcomes attributed to either the treatment effects or to random noise.
+## Is my effect fixed? Or random?
+We have looked at several examples of regression models. For the examples, I have intentionally chosen data with a pretty simple structure: differences in the response are attributed either to features that we are studying or to independent random noise. All of the coefficients we've estimated are fixed effects. We encounter random effects when differences in the response are due to features that are not of interest in the study, or the randomness is not independent.
+
+We encounter random effects when the observations are grouped in ways that matter to the response but are not of interest in the study. Examples arise in designed experiments and in observational studies.
+
+
+Imagine an experiment to test a new technique of teaching middle school math. Different classes are randomly assigned to be taught by the new or the old method, and after a quarter all of the students take a test to assess their learning. The analysis is mainly interested in estimating what effect the teaching method has on a student's test score.
+
+The actual instruction may differ slightly even between classes that were taught according to the same method. So class matters, even though it is not of interest in the analysis. Teaching method was applied at the classroom level and measured at the student level, so there are several independent observations of each class. They are  independent because one student's score shouldn't affect anyone else (we don't consider students copying from each other). Those observations are only independent after accounting for the class grouping - remember that regression assumes the *residuals* are independent.
+
+We could model the data by calculating the average test score within each class, which takes care of dependence between the scores within a class. But in that case, we lose any information about how the typical difference between individual students in the same class compares to the average score difference between classes.
+
+Alternatively, we could treat class as a fixed effect and use the methods that we've already learned so far. But in that case, we would measure the differences between specific classes rather than the typical difference between classes in the abstract. This abstract is more relevant for the purposes of the described experiment because if the new teaching method is adopted it will be applied in new classes that may resemble the overall cohort of classes in the study, but will not exactly match the conditions of any one class.
+
+This distinction between the cohort and the specific classes is why we call the classroom effect a "random effect". We consider the specific classes to be a random sample from an abstract population of classrooms. This specific sample makes up the cohort in the study and provides an estimate of the typical difference in the population. That typical population difference is what will come up in future applications of the new teaching method, and therefore is more important to our application of this study than is the specific cohort effects, which we could estimate as fixed effects.
+
+<!---Imagine a clinical trial to test the effectiveness of a new drug that is intended to treat high blood pressure. Patients are enrolled at several hospitals across the country and assigned to either get the new drug or get a placebo. The response is each patient's blood pressure after two months taking their assigned treatment. Clearly, the analysis is mainly interested in the effect on blood pressure of whether a patient was assigned take the ew drug or the placebo. But there are demographic, environmental, and economic differences between regions that may affect the blood pressure too, and so patients at the same hospital are probably more alike in general than patients at different hospitals. So because the --->
+
+
+
+
 
 ```{r hidden-load}
 #| echo: false

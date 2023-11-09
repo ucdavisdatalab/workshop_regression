@@ -1,47 +1,19 @@
 # Introduction
-A regression model is a way to express a relationship between some response and one or more predictors. In order to estimate the model, you need to have measurements (aka observations) of the response and the predictors. We may use the following terms interchangeably:
+A regression model is a way to express a relationship between some response and one or more predictor variables. It's such a common method of analysis that it can occasionally be difficult to remember that there is anything else to do.
 
-- response
-- response variable
-- dependent variable
-- output
-- output variable
+Nearly every day I am asked questions about regression models, and they often seem motivated by anxiety about assumptions and validity of an interpretation. I'm going to try to provide you with the tools to begin answering those questions yourself. With practice you'll hopefully begin to develop the ability to reason about your models and how they work.
 
-Likewise, the following may be used interchangeably:
-- predictor
-- predictor variable
-- independent variable
-- input
-- input variable
+Anyway, you've probably heard of and tried regression. Now you're here. Why? I don't know. Hopefully this will help!
 
+## Data
+The data for a regression model are typically in a spreadsheet format, where each row of data is called an *observation* and each column is called a *feature* (aka *predictor*, *input*, or *independent variable*). The column that is the outcome of the model is called the *response* (aka *output*, *target*, or *dependent variable*). Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
 
-## Outline
-These are the parts of the workshop:
-
-### Part one
-1. Linear model
-2. Categorical vs. continuous features
-3. Generalized linear model
-
-### Part two
-4. Random effects nd mixed-effects models
-
---------------------
-## The linear model
-Let's say what we mean by a "linear model". This is an equation that describes some output variable as a linear function of some input variable(s).
-
-Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.
-
-The data for a linear model are typically in a spreadsheet format, where each row of data is called an "observation" and each column is called a "feature". The column that is the outcome of the model is called the "response". Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
-
-### Preparation
+## Preparation
 Your computer will do whatever you tell it to do, even if it's not a good idea. With this great power comes the responsibility to think, and to check your assumptions.
 
 The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.
 
 The Datasaurus dozen are a collection of thirteen data sets consisting of two features (x and y) that have the same means, variances, and correlations.
-
-
 
 ```{r install-datasaurus}
 #| include: false
@@ -62,7 +34,7 @@ library(ggplot2)
 library(tidyr)
 
 group_by(datasaurus_dozen, dataset) |>
-  summarize(correlation = round(cor(x, y), 3), across(c('x', 'y'), .fns=list('mn'=~round(mean(.x), 1), 'var'= ~ round(var(.x), 1))))
+  summarize(correlation = round(cor(x, y), 3), across(c('x', 'y'), .fns=list('mean'=~round(mean(.x), 1), 'variance'= ~ round(var(.x), 1))))
 
 ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset)) +
     geom_point() +

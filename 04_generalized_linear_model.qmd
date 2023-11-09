@@ -1,3 +1,4 @@
+# Generalized Linear Regression
 <!---# Generalized Linear Models
 
 ```{r import}
@@ -48,13 +49,17 @@ To view and interpret a GLM, use the `summary()` function, just as you did for a
 
 --->
 
-# Generalized linear regression
+```{r hidden-import}
+#| include: false
+library(dplyr)
+```
+
 We won't put much emphasis on generalized linear models (GLMs) in this workshop, but they are important and so you might want to know about them. GLMs are used when the response variable has some distribution other than normal - logistic regression (binary response) is by far the most commonly used GLM and Poisson regression (count response) is fairly common, too. In any case, the differences between an ordinary linear model and a generalized linear model are fairly minor. 
 
-- Response distribution is different. As a result:
-  - Response variance is no longer assumed equal (when variance depends on mean).
-  - The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what's called a "Link Function").
-  - Thus, diagnostics have to change.
+- The distribution of the residuals isn't normal. Several types of residuals can be used for a GLM — R defaults to the deviance residual.
+- Response variance is no longer assumed equal (when variance depends on mean).
+- The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what's called a "Link Function").
+- Thus, diagnostics have to change.
 
 ### Logistic Regression - UC Berkeley Admissions
 The `UCBAdmissions` dataset is built into R and provides a tabulation of how many men and women applied and were admitted to six departments at UC Berkeley in 1973. Suppose we want to estimate whether male or female applicants were more likely than the other to be admitted. Since each admission decision is binary, we will use a generalized linear model with binomial response to estimate the effect of gender on admission probability. The data are built-in as an array so we need to convert them to a data frame before getting started.
@@ -90,19 +95,69 @@ For a logistic regression model, the estimated coefficients are reported as log 
 
 
 
-<!---
 ## Poisson Regression - Effectiveness of Bug Sprays
 
-Here is an example of a Poisson regression model. 
+We conclude with an example using count data as a response. The `InsectSprays` dataset is built in to R so you can import it with the command `data(InsectSprays)`. It has 72 observations of two features. The two features are: the type of insecticide that was applied to a plant, and the other is a count of how many insects were found on the plant. Our goal is to determine whether the different insecticides lead to a consistent difference in the number of insects.
+
+Plotting the data reveals that there are six insecticides in the study, with twelve observations each:
+
+```{r plot-InsectSprays}
+#| message: false
+#| warnings: false
+data(InsectSprays)
+plot(InsectSprays)
+```
+
+We can see a few more things from the plot. Counts range from zero to 26, and it appears that the insecticides are in two groups: the counts for sprays 3, 4, and 5 are clustered at low counts (ony one count in this group is greater than six), while the counts for sprays 1, 2, and 6 are all at least seven. That suggests that there is a significant difference between the treatments.
+
+We can also see that the counts are more densely clustered for the lesser counts, and more spread out for the greater counts. That's an unequal variance, so the linear model is probably not appropriate. There is a response type specifically for count data that gets more spread out as the average count grows: Poisson. Let's fit a Poisson regression to the insecticide data.
 
 ```{r poisson-regression-insect-sprays}
 model_spray = glm(count ~ spray, data=InsectSprays, family='poisson')
 summary(model_spray)
-plot(model_spray)
+
+# make diagnostic plots:
+deviance_residuals = residuals(model_spray, type="deviance")
+layout(matrix(1:2, 1, 2))
+qqnorm(deviance_residuals)
+abline(a=0, b=1, lty=3)
+plot(fitted(model_spray), deviance_residuals)
 ```
 
 
-...)
+
+The diagnostics for this model look pretty good. The Q-Q plot may indicate slightly heavy tails, which would be a sign that the response is overdispersed for the Poisson distribution. A further check is to calculate the mean and variance for each group in the data (this is ony pratical because the model is simple and the number of levels is small). If the data has a Poisson distribution, we expect that the mean and the variance are approximately equal. Of course, real data never perfectly matches this expected relationship.
+
+```{r check-for-overdispersion}
+# check the men-variance relationship
+group_by(InsectSprays, spray) |>
+  summarize(mean = mean(count),
+            var = var(count))
+```
+
+In most cases, the variance is slightly greater than the mean. Only group F has variance more than twice the mean, which is a reasonable threshold for where to begin to worry.
+
+### Negative-binomial regression
+I'd probably leave the `InsectSprays` model as it is for simplicity, but it would also be reasonable to change the model to account for overdispersion. There are a lot of ways to do that, and one classic method is to model the response as a negative-binomial distribution. That requires loading the `MASS` package, which provies the `glm.nb()` function. Here's the result:
 
 
+```{r poisson-regression-insect-sprays-nb}
+# import the MASS package
+library(MASS)
 
+#estimate the NB model
+model_spray_nb = glm.nb(count ~ spray, data=InsectSprays)
+summary(model_spray_nb)
+
+# make diagnostic plots:
+deviance_residuals_nb = residuals(model_spray_nb, type="deviance")
+layout(matrix(1:2, 1, 2))
+qqnorm(deviance_residuals_nb)
+abline(a=0, b=1, lty=3)
+plot(fitted(model_spray_nb), deviance_residuals_nb)
+
+# compare the models on the basis of AIC
+AIC(model_spray, model_spray_nb)
+```
+
+The negative-binomial model has a smaller AIC and the Q-Q lies more along the line. We should conclude that the negative-binomial model appears to be a slightly better fit for the data.
