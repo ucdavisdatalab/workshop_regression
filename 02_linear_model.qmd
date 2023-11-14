@@ -40,9 +40,9 @@ print(penguins)
 Suppose we think that all penguins grow in a certain proportional way. Then we may be able to estimate the penguin's mass based on the length of its flipper. Let's take a look at how that relationship looks in the data.
 
 ```{r penguins-plot}
-#| echo: false
 #| warning: false
 #| message: false
+#| code-fold: true
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g) +
   geom_point() +
@@ -60,9 +60,9 @@ We call the differences **residuals**, and there is one per dot. The difference
 is calculated as the vertical distance, as shown here:
 
 ```{r residual-example}
-#| echo: false
 #| warning: false
 #| message: false
+#| code-fold: true
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g) +
   geom_point() +
@@ -88,9 +88,9 @@ ggplot(penguins) +
 A line is totally defined by its slope and intercept (intercept is where the line crosses the y-axis). The math of linear regression is just a way to calculate the slope and intercept of that line, and its intuition is also quite simple. It starts with the goal of minimizing the errors. There is an error for each dot, which is the difference between the line and the dot. To minimize the errors, we need to combine all those numbers into one (otherwise, you might have to worry about what effect a change in "A" has on "B", etc.) A natural way to combine many numbers into one is to add them together. But there is a problem: errors can be negative (when the model fit is greater than the observed data.) If that seems complicated, just understand that both of these lines have residuals that sum to zero:
 
 ```{r penguins-errors}
-#| echo: false
 #| warning: false
 #| message: false
+#| code-fold: true
 library(cowplot)
 
 regression_plot = ggplot(penguins) +
@@ -174,9 +174,9 @@ Correlated features will affect each others' estimates, and the effect increases
 We can reasonably assume that penguins with longer flippers and heavier bodies also have longer bills. That's true, as seen in this figure: 
 
 ```{r bill-length}
-#| echo: false
 #| warning: false
 #| message: false
+#| code-fold: true
 bill_plot_1 = ggplot(penguins) +
   aes(x=flipper_length_mm, y=bill_length_mm) +
   geom_point() +

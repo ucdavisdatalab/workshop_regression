@@ -35,6 +35,7 @@ Returning to the `palmerpenguins` dataset, the plot below shows the mass of peng
 ```{r penguins-spp-example}
 #| warning: false
 #| message: false
+#| code-fold: true
 ggplot(penguins) +
   aes(x=species, y=body_mass_g) +
   geom_point() +
@@ -47,6 +48,7 @@ Look carefully at the x-axis and you'll see that the coordinates are species nam
 ```{r penguin-factor-example-smoothed}
 #| warning: false
 #| message: false
+#| code-fold: true
 ggplot(penguins) +
   aes(x=species, y=body_mass_g) +
   geom_point() +
@@ -125,9 +127,9 @@ combo_model = lm(body_mass_g ~ flipper_length_mm + species,
 
 Here is a visualization of the model fit:
 ```{r plot-no-interactions}
-#| echo: false
 #| warning: false
 #| message: false
+#| code-fold: true
 penguins$nointeract = predict(combo_model, newdata=penguins)
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g, color=species) +
@@ -161,9 +163,9 @@ The summary shows how big the differences are between the species-specific inter
 We can improve this model further by adding an interaction between the species and the flipper length. An interaction allows the regression lines to have different slopes for the different species, as seen here:
 
 ```{r plot-interactions}
-#| echo: false
 #| warning: false
 #| message: false
+#| code-fold: true
 ggplot(penguins) +
   aes(x=flipper_length_mm, y=body_mass_g, color=species) +
   geom_point() +
