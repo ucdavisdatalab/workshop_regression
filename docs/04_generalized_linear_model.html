@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Practical Introduction to Regression Modeling in R - Generalized Linear Models</title>
+<title>A Practical Introduction to Regression Modeling in R - 5&nbsp; Generalized Linear Models</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,6 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./05_fixed_random_effects.html" rel="next">
 <link href="./03_categorical_continuous.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -107,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_generalized_linear_model.html"><span class="chapter-title">Generalized Linear Models</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_generalized_linear_model.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -140,27 +141,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction</span></a>
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Regression</span></a>
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Categorical features</span></a>
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span></a>
   </div>
 </li>
     </ul>
@@ -173,10 +185,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#logistic-regression---uc-berkeley-admissions" id="toc-logistic-regression---uc-berkeley-admissions" class="nav-link active" data-scroll-target="#logistic-regression---uc-berkeley-admissions">Logistic Regression - UC Berkeley Admissions</a></li>
-  <li><a href="#poisson-regression---effectiveness-of-bug-sprays" id="toc-poisson-regression---effectiveness-of-bug-sprays" class="nav-link" data-scroll-target="#poisson-regression---effectiveness-of-bug-sprays">Poisson Regression - Effectiveness of Bug Sprays</a>
+  <li><a href="#logistic-regression---uc-berkeley-admissions" id="toc-logistic-regression---uc-berkeley-admissions" class="nav-link active" data-scroll-target="#logistic-regression---uc-berkeley-admissions"><span class="header-section-number">5.0.1</span> Logistic Regression - UC Berkeley Admissions</a></li>
+  <li><a href="#poisson-regression---effectiveness-of-bug-sprays" id="toc-poisson-regression---effectiveness-of-bug-sprays" class="nav-link" data-scroll-target="#poisson-regression---effectiveness-of-bug-sprays"><span class="header-section-number">5.1</span> Poisson Regression - Effectiveness of Bug Sprays</a>
   <ul class="collapse">
-  <li><a href="#negative-binomial-regression" id="toc-negative-binomial-regression" class="nav-link" data-scroll-target="#negative-binomial-regression">Negative-binomial regression</a></li>
+  <li><a href="#negative-binomial-regression" id="toc-negative-binomial-regression" class="nav-link" data-scroll-target="#negative-binomial-regression"><span class="header-section-number">5.1.1</span> Negative-binomial regression</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -186,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Generalized Linear Models</span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></h1>
 </div>
 
 
@@ -292,8 +304,8 @@ To view and interpret a GLM, use the `summary()` function, just as you did for a
 <li>The linear model predicts a transformed version of the mean, rather than predicting the mean itself (the mean is transformed by what’s called a “Link Function”).</li>
 <li>Thus, diagnostics have to change.</li>
 </ul>
-<section id="logistic-regression---uc-berkeley-admissions" class="level3">
-<h3 class="anchored" data-anchor-id="logistic-regression---uc-berkeley-admissions">Logistic Regression - UC Berkeley Admissions</h3>
+<section id="logistic-regression---uc-berkeley-admissions" class="level3" data-number="5.0.1">
+<h3 data-number="5.0.1" class="anchored" data-anchor-id="logistic-regression---uc-berkeley-admissions"><span class="header-section-number">5.0.1</span> Logistic Regression - UC Berkeley Admissions</h3>
 <p>The <code>UCBAdmissions</code> data set is built into R and provides a tabulation of how many men and women applied and were admitted to six departments at UC Berkeley in 1973. Suppose we want to estimate whether male or female applicants were more likely to be admitted. Since each admission decision is binary, we will use a generalized linear model with binomial response to estimate the effect of gender on admission probability. The data are built-in as an array so we need to convert them to a data frame before getting started.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
@@ -363,8 +375,8 @@ Number of Fisher Scoring iterations: 4</code></pre>
 <p>For a logistic regression model, the estimated coefficients are reported as <strong>log odds ratios</strong>. A log odds ratio greater than zero corresponds to probability greater than 50%, and vice versa. Both <code>Dept</code> and <code>Gender</code> are categorical, so you can figure out the estimated log odds ratio for a particular combination by adding the relevant rows from the summary table. The default level of this combination is <code>Male</code> and <code>DeptA</code>.</p>
 <!---This data has often been used to illustrate Simpson's Paradox, because overall men were admitted at a greater rate than women, but this may be because women applied to more selective departments. --->
 </section>
-<section id="poisson-regression---effectiveness-of-bug-sprays" class="level2">
-<h2 class="anchored" data-anchor-id="poisson-regression---effectiveness-of-bug-sprays">Poisson Regression - Effectiveness of Bug Sprays</h2>
+<section id="poisson-regression---effectiveness-of-bug-sprays" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="poisson-regression---effectiveness-of-bug-sprays"><span class="header-section-number">5.1</span> Poisson Regression - Effectiveness of Bug Sprays</h2>
 <p>We conclude with an example using count data as a response. The <code>InsectSprays</code> dataset is built in to R so you can import it with the command <code>data(InsectSprays)</code>. It has 72 observations of two features. The two features are: the type of insecticide that was applied to a plant, and the other is a count of how many insects were found on the plant. Our goal is to determine whether the different insecticides lead to a consistent difference in the number of insects.</p>
 <p>Plotting the data reveals that there are six insecticides in the study, with twelve observations each:</p>
 <div class="cell" data-warnings="false">
@@ -432,8 +444,8 @@ Number of Fisher Scoring iterations: 5</code></pre>
 </div>
 </div>
 <p>In most cases, the variance is slightly greater than the mean. Only group F has variance more than twice the mean, which is a reasonable threshold for where to begin to worry.</p>
-<section id="negative-binomial-regression" class="level3">
-<h3 class="anchored" data-anchor-id="negative-binomial-regression">Negative-binomial regression</h3>
+<section id="negative-binomial-regression" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="negative-binomial-regression"><span class="header-section-number">5.1.1</span> Negative-binomial regression</h3>
 <p>I’d probably leave the <code>InsectSprays</code> model as it is for simplicity, but it would also be reasonable to change the model to account for overdispersion. There are a lot of ways to do that, and one classic method is to model the response as a negative-binomial distribution. That requires loading the <code>MASS</code> package, which provies the <code>glm.nb()</code> function. Here’s the result:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import the MASS package</span></span>
@@ -740,10 +752,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./03_categorical_continuous.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Categorical features</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./05_fixed_random_effects.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

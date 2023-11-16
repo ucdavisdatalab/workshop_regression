@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Practical Introduction to Regression Modeling in R - Categorical features</title>
+<title>A Practical Introduction to Regression Modeling in R - 4&nbsp; Categorical features</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_categorical_continuous.html"><span class="chapter-title">Categorical features</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_categorical_continuous.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -141,27 +141,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction</span></a>
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Regression</span></a>
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Categorical features</span></a>
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span></a>
   </div>
 </li>
     </ul>
@@ -174,13 +185,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#factors" id="toc-factors" class="nav-link active" data-scroll-target="#factors">Factors</a>
+  <li><a href="#factors" id="toc-factors" class="nav-link active" data-scroll-target="#factors"><span class="header-section-number">4.1</span> Factors</a>
   <ul class="collapse">
-  <li><a href="#penguin-body-mass" id="toc-penguin-body-mass" class="nav-link" data-scroll-target="#penguin-body-mass">Penguin body mass</a></li>
-  <li><a href="#design-matrix" id="toc-design-matrix" class="nav-link" data-scroll-target="#design-matrix">Design matrix</a></li>
+  <li><a href="#penguin-body-mass" id="toc-penguin-body-mass" class="nav-link" data-scroll-target="#penguin-body-mass"><span class="header-section-number">4.1.1</span> Penguin body mass</a></li>
+  <li><a href="#design-matrix" id="toc-design-matrix" class="nav-link" data-scroll-target="#design-matrix"><span class="header-section-number">4.1.2</span> Design matrix</a></li>
   </ul></li>
-  <li><a href="#combining-continuous-and-categorical" id="toc-combining-continuous-and-categorical" class="nav-link" data-scroll-target="#combining-continuous-and-categorical">Combining continuous and categorical</a></li>
-  <li><a href="#interactions" id="toc-interactions" class="nav-link" data-scroll-target="#interactions">Interactions</a></li>
+  <li><a href="#combining-continuous-and-categorical" id="toc-combining-continuous-and-categorical" class="nav-link" data-scroll-target="#combining-continuous-and-categorical"><span class="header-section-number">4.2</span> Combining continuous and categorical</a></li>
+  <li><a href="#interactions" id="toc-interactions" class="nav-link" data-scroll-target="#interactions"><span class="header-section-number">4.3</span> Interactions</a></li>
   </ul>
 </nav>
     </div>
@@ -189,7 +200,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Categorical features</span></h1>
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></h1>
 </div>
 
 
@@ -206,11 +217,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>Categorical data are a common occurrence in regression modeling. These are any data that consist of categories rather than numbers. For instance, in a forestry experiment, you may thin the trees in some plots and do a prescribed burn in others. “Prescribed burn” and “thinning” aren’t numerical values, they are categories of treatment.</p>
 <p>Sometimes categories have a natural order, like low, medium, high, which blurs the distinction between categorical and numerical data. We’ll also cover ways to handle these.</p>
-<section id="factors" class="level2">
-<h2 class="anchored" data-anchor-id="factors">Factors</h2>
+<section id="factors" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="factors"><span class="header-section-number">4.1</span> Factors</h2>
 <p>In R, categorical variables are called <strong>factors</strong>. Deep down in the machinery of a regression model, factor effects are handled the same way as continuous features. To fully appreciate this, you have to understand that factors are coded differently than continuous features. To begin, note that linear regression for factor variables is also a kind of scatterplot smoother. Let’s look at an example:</p>
-<section id="penguin-body-mass" class="level3">
-<h3 class="anchored" data-anchor-id="penguin-body-mass">Penguin body mass</h3>
+<section id="penguin-body-mass" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="penguin-body-mass"><span class="header-section-number">4.1.1</span> Penguin body mass</h3>
 <p>Returning to the <code>palmerpenguins</code> dataset, the plot below shows the mass of penguins of three different species.</p>
 <div class="cell">
 <details>
@@ -282,8 +293,8 @@ F-statistic: 343.6 on 2 and 339 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>Notice that the fitted value of the <code>(Intercept)</code> is identical to the average mass of an Adelie penguin, and that there are two rows of species effects, instead of the one row that we saw for the continuous effects so far. The values of the <code>Estimate</code> column in those rows are the estimated effects for Chinstrap and Gentoo penguins - and they are equal to the difference between the average mass of those penguins and Adelie penguins.</p>
 </section>
-<section id="design-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="design-matrix">Design matrix</h3>
+<section id="design-matrix" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="design-matrix"><span class="header-section-number">4.1.2</span> Design matrix</h3>
 <p>The reason that the results look like this can be made more clear if you look at the way R converts the categories to numbers. The <code>model.matrix()</code> is the function that R uses internally to prepare data for an <code>lm()</code>, but we can call it ourselves. Remember that linear regression works by multiplying each term by a coefficient, adding adding the results together. Here, we have three terms for the three species. Adelie has been automatically selected as the reference level because it appears first in the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(<span class="fu">model.matrix</span>(penguin_lm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -343,8 +354,8 @@ F-statistic: 343.6 on 2 and 339 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </section>
 </section>
-<section id="combining-continuous-and-categorical" class="level2">
-<h2 class="anchored" data-anchor-id="combining-continuous-and-categorical">Combining continuous and categorical</h2>
+<section id="combining-continuous-and-categorical" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="combining-continuous-and-categorical"><span class="header-section-number">4.2</span> Combining continuous and categorical</h2>
 <p>Of course, continuous and categorical features don’t have to be kept separate. We’ll return to our original example and consider whether the relationship between a penguin’s mass and its flipper length is different between the three species. You combine categorical and continuous features by adding them together in the model formula.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a model with both species and flipper length as features</span></span>
@@ -406,8 +417,8 @@ F-statistic: 405.7 on 3 and 338 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>The summary shows how big the differences are between the species-specific intercepts. The diagnostic plots still exhibit a “U” shape in the Fitted Vs. Residual plot, so we haven’t yet found an ideal regression model for this data.</p>
 </section>
-<section id="interactions" class="level2">
-<h2 class="anchored" data-anchor-id="interactions">Interactions</h2>
+<section id="interactions" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="interactions"><span class="header-section-number">4.3</span> Interactions</h2>
 <p>We can improve this model further by adding an interaction between the species and the flipper length. An interaction allows the regression lines to have different slopes for the different species, as seen here:</p>
 <div class="cell">
 <details>
@@ -709,12 +720,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./02_linear_model.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Linear Regression</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./04_generalized_linear_model.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Generalized Linear Models</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -74,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -107,27 +107,38 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction</span></a>
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Regression</span></a>
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Categorical features</span></a>
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span></a>
   </div>
 </li>
     </ul>
@@ -140,10 +151,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#description" id="toc-description" class="nav-link active" data-scroll-target="#description">Description</a>
+  <li><a href="#description" id="toc-description" class="nav-link active" data-scroll-target="#description"><span class="header-section-number">1</span> Description</a>
   <ul class="collapse">
-  <li><a href="#workshop-structure" id="toc-workshop-structure" class="nav-link" data-scroll-target="#workshop-structure">Workshop Structure</a></li>
-  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning objectives</a></li>
+  <li><a href="#workshop-structure" id="toc-workshop-structure" class="nav-link" data-scroll-target="#workshop-structure"><span class="header-section-number">1.1</span> Workshop Structure</a></li>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives"><span class="header-section-number">1.2</span> Learning objectives</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -180,16 +191,16 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="description" class="level1">
-<h1>Description</h1>
+<section id="description" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Description</h1>
 <p>Regression modeling — using input variables to predict or model the value of a response — is widely used in pretty much every field of research. Yet many graduate programs don’t include formal training in statistical modeling, and the DataLab’s office hours indicate widespread anxiety about using regression models in practice. This workshop is intended to help address that anxiety by teaching the fundamentals of using regression modeling. The emphasis is on practice and intuition, with only a small amount of math. This workshop is open to all UC Davis graduate students and postdoctoral scholars. Attendance at both sessions is required. Instruction is in-person and seats are limited. A Zoom link (e.g., broadcast) will be available for those unable to attend who would like to watch live.</p>
-<section id="workshop-structure" class="level2">
-<h2 class="anchored" data-anchor-id="workshop-structure">Workshop Structure</h2>
+<section id="workshop-structure" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="workshop-structure"><span class="header-section-number">1.1</span> Workshop Structure</h2>
 <p>This workshop describes itself as a practical introduction. That means you are expected to get practice with regression, so please follow along! The workshop follows the examples in this document, and we will walk through each of them live, taking time to discuss the what and why of regression modeling. Your experience will be far more rewarding if you open up a fresh file in RStudio and follow along!</p>
 <p>The first day of the workshop series will cover linear and generalized linear regression, including discussions of checking model assumptions and how to handle categorical vs.&nbsp;continuous features. The second day will focus on random effects and mixed effect modeling.</p>
 </section>
-<section id="learning-objectives" class="level2">
-<h2 class="anchored" data-anchor-id="learning-objectives">Learning objectives</h2>
+<section id="learning-objectives" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="learning-objectives"><span class="header-section-number">1.2</span> Learning objectives</h2>
 <p>After this workshop, learners will be able to: - Explain the differences between linear and generalized linear regression models - Explain the differences between fixed effects and random effects - Describe how continuous and categorical variables are handled differently by regression modeling software - Implement the above-mentioned model types - Read and interpret regression summary tables - Do diagnostic checks on regression models</p>
 
 
@@ -435,7 +446,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./01_introduction.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

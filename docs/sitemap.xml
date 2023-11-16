@@ -2,22 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://d-rug.github.io/index.html</loc>
-    <lastmod>2023-11-14T19:37:14.947Z</lastmod>
+    <lastmod>2023-11-16T06:41:33.291Z</lastmod>
   </url>
   <url>
     <loc>https://d-rug.github.io/01_introduction.html</loc>
-    <lastmod>2023-11-14T19:37:14.951Z</lastmod>
+    <lastmod>2023-11-16T06:41:33.296Z</lastmod>
   </url>
   <url>
     <loc>https://d-rug.github.io/02_linear_model.html</loc>
-    <lastmod>2023-11-14T19:37:14.973Z</lastmod>
+    <lastmod>2023-11-16T06:41:33.317Z</lastmod>
   </url>
   <url>
     <loc>https://d-rug.github.io/03_categorical_continuous.html</loc>
-    <lastmod>2023-11-14T19:37:14.988Z</lastmod>
+    <lastmod>2023-11-16T06:41:33.337Z</lastmod>
   </url>
   <url>
     <loc>https://d-rug.github.io/04_generalized_linear_model.html</loc>
-    <lastmod>2023-11-14T19:37:15.000Z</lastmod>
+    <lastmod>2023-11-16T06:41:33.349Z</lastmod>
+  </url>
+  <url>
+    <loc>https://d-rug.github.io/05_fixed_random_effects.html</loc>
+    <lastmod>2023-11-16T06:41:33.374Z</lastmod>
   </url>
 </urlset>

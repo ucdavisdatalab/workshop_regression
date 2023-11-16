@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Practical Introduction to Regression Modeling in R - Linear Regression</title>
+<title>A Practical Introduction to Regression Modeling in R - 3&nbsp; Linear Regression</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_linear_model.html"><span class="chapter-title">Linear Regression</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_linear_model.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -143,27 +143,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Introduction</span></a>
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Linear Regression</span></a>
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Categorical features</span></a>
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span></a>
   </div>
 </li>
     </ul>
@@ -176,16 +187,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#palmer-penguins-data" id="toc-palmer-penguins-data" class="nav-link active" data-scroll-target="#palmer-penguins-data">Palmer penguins data</a></li>
-  <li><a href="#residuals" id="toc-residuals" class="nav-link" data-scroll-target="#residuals">Residuals</a></li>
-  <li><a href="#how-the-line-is-calculated" id="toc-how-the-line-is-calculated" class="nav-link" data-scroll-target="#how-the-line-is-calculated">How the line is calculated</a>
+  <li><a href="#palmer-penguins-data" id="toc-palmer-penguins-data" class="nav-link active" data-scroll-target="#palmer-penguins-data"><span class="header-section-number">3.1</span> Palmer penguins data</a></li>
+  <li><a href="#residuals" id="toc-residuals" class="nav-link" data-scroll-target="#residuals"><span class="header-section-number">3.2</span> Residuals</a></li>
+  <li><a href="#how-the-line-is-calculated" id="toc-how-the-line-is-calculated" class="nav-link" data-scroll-target="#how-the-line-is-calculated"><span class="header-section-number">3.3</span> How the line is calculated</a>
   <ul class="collapse">
-  <li><a href="#the-lm-function-in-r" id="toc-the-lm-function-in-r" class="nav-link" data-scroll-target="#the-lm-function-in-r">The <code>lm()</code> function in R</a></li>
+  <li><a href="#the-lm-function-in-r" id="toc-the-lm-function-in-r" class="nav-link" data-scroll-target="#the-lm-function-in-r"><span class="header-section-number">3.3.1</span> The <code>lm()</code> function in R</a></li>
   </ul></li>
-  <li><a href="#assumptions-of-linear-regression" id="toc-assumptions-of-linear-regression" class="nav-link" data-scroll-target="#assumptions-of-linear-regression">Assumptions of linear regression</a></li>
-  <li><a href="#multiple-features" id="toc-multiple-features" class="nav-link" data-scroll-target="#multiple-features">Multiple features</a>
+  <li><a href="#assumptions-of-linear-regression" id="toc-assumptions-of-linear-regression" class="nav-link" data-scroll-target="#assumptions-of-linear-regression"><span class="header-section-number">3.4</span> Assumptions of linear regression</a></li>
+  <li><a href="#multiple-features" id="toc-multiple-features" class="nav-link" data-scroll-target="#multiple-features"><span class="header-section-number">3.5</span> Multiple features</a>
   <ul class="collapse">
-  <li><a href="#which-features-to-include" id="toc-which-features-to-include" class="nav-link" data-scroll-target="#which-features-to-include">Which features to include?</a></li>
+  <li><a href="#which-features-to-include" id="toc-which-features-to-include" class="nav-link" data-scroll-target="#which-features-to-include"><span class="header-section-number">3.5.1</span> Which features to include?</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -195,7 +206,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Linear Regression</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></h1>
 </div>
 
 
@@ -213,8 +224,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Let’s say what we mean by a <strong>linear model</strong>. This is an equation that describes the response as a linear function of some feature(s).</p>
 <p>Note that the linear model is a relationship, while linear regression is a method of estimating that relationship. But since it is by far the most common way of estimating that relationship, the terms are often used interchangeably.</p>
 <p>Linear regression means drawing a straight line through a scatterplot of the data. That’s easy to picture when there is a single feature, so let’s look at an example.</p>
-<section id="palmer-penguins-data" class="level2">
-<h2 class="anchored" data-anchor-id="palmer-penguins-data">Palmer penguins data</h2>
+<section id="palmer-penguins-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="palmer-penguins-data"><span class="header-section-number">3.1</span> Palmer penguins data</h2>
 <p>This first example will use data from the <a href="https://allisonhorst.github.io/palmerpenguins/"><code>palmerpenguins</code> package</a>. It was created by Allison Horst and contains observations of 344 penguins from the Palmer Station Antarctica LTER site. There are eight features: year, species, sex, island, bill width (mm), bill length (mm), flipper length (mm), and body mass (g). We’ll begin by installing and then importing the <code>palmerpenguins</code> package, and then loading the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"palmerpenguins"</span>)</span>
@@ -279,8 +290,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>I’ve added a regression line to illustrate the assumed linear relationship. Obviously, you’d want your model of the response to fit perfectly but there’s no line that would go through all the points.</p>
 </section>
-<section id="residuals" class="level2">
-<h2 class="anchored" data-anchor-id="residuals">Residuals</h2>
+<section id="residuals" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="residuals"><span class="header-section-number">3.2</span> Residuals</h2>
 <p>We have a special term for the difference between the fitted line and the dots. We call the differences <strong>residuals</strong>, and there is one per dot. The difference is calculated as the vertical distance, as shown here:</p>
 <div class="cell">
 <details>
@@ -308,8 +319,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="how-the-line-is-calculated" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-line-is-calculated">How the line is calculated</h2>
+<section id="how-the-line-is-calculated" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="how-the-line-is-calculated"><span class="header-section-number">3.3</span> How the line is calculated</h2>
 <p>A line is totally defined by its slope and intercept (intercept is where the line crosses the y-axis). The math of linear regression is just a way to calculate the slope and intercept of that line, and its intuition is also quite simple. It starts with the goal of minimizing the errors. There is an error for each dot, which is the difference between the line and the dot. To minimize the errors, we need to combine all those numbers into one (otherwise, you might have to worry about what effect a change in “A” has on “B”, etc.) A natural way to combine many numbers into one is to add them together. But there is a problem: errors can be negative (when the model fit is greater than the observed data.) If that seems complicated, just understand that both of these lines have residuals that sum to zero:</p>
 <div class="cell">
 <details>
@@ -340,8 +351,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>A large negative error may be a good thing for “minimizing” error, but we don’t want that because the error is large. So the errors are <em>squared</em> before adding them together. This is the origin of terms you might have heard, like the <strong>sum of squared errors</strong> or the <strong>mean squared error</strong>.</p>
-<section id="the-lm-function-in-r" class="level3">
-<h3 class="anchored" data-anchor-id="the-lm-function-in-r">The <code>lm()</code> function in R</h3>
+<section id="the-lm-function-in-r" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="the-lm-function-in-r"><span class="header-section-number">3.3.1</span> The <code>lm()</code> function in R</h3>
 <p>The function to estimate a linear regression model in R is called <code>lm()</code>. We’ll get quite familiar with the function during this workshop. Now let’s use it to estimate the regression line in our penguin body size example.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>penguin_mass_model <span class="ot">=</span> <span class="fu">lm</span>(</span>
@@ -378,8 +389,8 @@ F-statistic:  1071 on 1 and 340 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>In contrast, the coefficient p-values, reported as <code>Pr(&gt;|t|)</code> in the <code>Coefficients:</code> table, are often the main focus of analysis. Making use of these p-values and interpreting the asterisks as indicators of statistical significance depends on proper use of the <code>lm()</code> function. In particular, you must decide which variables to use before fitting a model, and you can only try once - otherwise, the p-values will be biased by peeking at the result before doing the test.</p>
 </section>
 </section>
-<section id="assumptions-of-linear-regression" class="level2">
-<h2 class="anchored" data-anchor-id="assumptions-of-linear-regression">Assumptions of linear regression</h2>
+<section id="assumptions-of-linear-regression" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="assumptions-of-linear-regression"><span class="header-section-number">3.4</span> Assumptions of linear regression</h2>
 <p>There are a few assumptions about your data that come with linear regression. Before you can accept the results, you must check these:</p>
 <ol type="1">
 <li><p>Linearity: The actual relationship between the features and the response is linear. A trend in the fitted vs.&nbsp;residual plot is evidence that the linearity assumption may be wrong.</p></li>
@@ -397,8 +408,8 @@ F-statistic:  1071 on 1 and 340 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>Here, there is a slight “U” shape in the Residual vs Fitted plot and in the Q-Q plot, which indicates that the relationship between flipper length and body mass is not quite linear. The points fall very close to the dashed diagonal on the Q-Q plot, which indicates that the residuals all seem to be from a nearly identical normal distribution. There is no clear pattern in the scale-location plot, so the residual variances are approximately equal. The deviations from ideal are pretty minor, and you could probably rely on this model to predict the mass of new penguins. But a more correct model is possible by looking at the species separately, as we’ll see in the next chapter.</p>
 </section>
-<section id="multiple-features" class="level2">
-<h2 class="anchored" data-anchor-id="multiple-features">Multiple features</h2>
+<section id="multiple-features" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="multiple-features"><span class="header-section-number">3.5</span> Multiple features</h2>
 <p>Our example above has just a single feature to create a model for the response. It is more common to have multiple features, and there really is no limit to how many. However, if the number of features is greater than the number of observations, then we will have problems with the estimation methods.</p>
 <p>When there are multiple features, they may be correlated with each other. This is almost always true of observational data (which are features that are measured from the observed units). Typically, the only way to have perfectly uncorrelated data is by designing an experiment where the treatments are uncorrelated.</p>
 <p>Correlated features will affect each others’ estimates, and the effect increases with the amount of correlation. That happens because when features are correlated, the model has similar fits if one coefficient increases and the other decreases, or vice versa.</p>
@@ -455,8 +466,8 @@ F-statistic: 536.6 on 2 and 339 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>The estimated coefficient has changed from 49.7 to <code>round(coef(correlated_model)[[2]], 1)</code> and the standard error of the estimated coefficient for <code>flipper_length_mm</code> is 2, which is 32% greater than the previous standard error of 1.5.</p>
-<section id="which-features-to-include" class="level3">
-<h3 class="anchored" data-anchor-id="which-features-to-include">Which features to include?</h3>
+<section id="which-features-to-include" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="which-features-to-include"><span class="header-section-number">3.5.1</span> Which features to include?</h3>
 <p>A common question is how to decide which features to include in a model. There’s no definitive answer, since the “best” model depends on the goal of the analysis, and model selection frequently ends in marginal and somewhat subjective decisions. In the simplest terms, the correct features for your model are the ones that are relevant to your analysis.</p>
 <p>If your goal is to study the relationship between some specific features and the response, then it’s best to select those features before fitting a model, and of course you have to keep in mind assumption (1) for linear models: “The actual relationship between the features and the response is linear.” This is a theory-driven approach to model selection, because you begin with an idea of the model you want to fit, and then tell the computer to estimate it.</p>
 <p>There are data-driven ways of doing model selection, most of which can be summarized as: try a model and then change it to get a better fit. These approaches are dangerous because they tend to over-fit the training data, which usually makes the model less useful for future data. In order to mitigate that risk, a portion of the data has to be held out from the model fitting, to test the model with.</p>
@@ -756,12 +767,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./01_introduction.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Introduction</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./03_categorical_continuous.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Categorical features</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

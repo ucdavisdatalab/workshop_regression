@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Practical Introduction to Regression Modeling in R - Introduction</title>
+<title>A Practical Introduction to Regression Modeling in R - 2&nbsp; Introduction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -74,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-title">Introduction</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_introduction.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -107,27 +107,38 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Introduction</span></a>
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Linear Regression</span></a>
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Categorical features</span></a>
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span></a>
   </div>
 </li>
     </ul>
@@ -140,8 +151,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a></li>
-  <li><a href="#plot-before-you-model" id="toc-plot-before-you-model" class="nav-link" data-scroll-target="#plot-before-you-model">Plot before you model!</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data"><span class="header-section-number">2.1</span> Data</a></li>
+  <li><a href="#plot-before-you-model" id="toc-plot-before-you-model" class="nav-link" data-scroll-target="#plot-before-you-model"><span class="header-section-number">2.2</span> Plot before you model!</a></li>
   </ul>
 </nav>
     </div>
@@ -150,7 +161,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Introduction</span></h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
 </div>
 
 
@@ -168,13 +179,12 @@ ul.task-list li input[type="checkbox"] {
 <p>A regression model is a way to express a relationship between some response and one or more predictor variables. It’s such a common method of analysis that it can occasionally be difficult to remember that there is anything else to do.</p>
 <p>Nearly every day I am asked questions about regression models, and they often seem motivated by anxiety about assumptions and validity of an interpretation. I’m going to try to provide you with the tools to begin answering those questions yourself. With practice you’ll hopefully begin to develop the ability to reason about your models and how they work.</p>
 <p>Anyway, you’ve probably heard of and tried regression. Now you’re here. Why? I don’t know. Hopefully this will help!</p>
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
-<p>The data for a regression model are typically in a spreadsheet format, where each row of data is called an <em>observation</em> and each column is called a <em>feature</em> (aka <em>predictor</em>, <em>input</em>, or <em>independent variable</em>). The column that is the outcome of the model is called the <em>response</em> (aka <em>output</em>, <em>target</em>, or <em>dependent variable</em>). Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
+<section id="data" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data"><span class="header-section-number">2.1</span> Data</h2>
 <p>The data for a linear model are typically in a tabular format (imagine a spreadsheet), where each row of data is called an <strong>observation</strong> and each column is called a <strong>feature</strong>. The column that is the outcome of the model is called the <strong>response</strong>. Each observation should include a value for every feature (there are some ways of handling missing data but that’s beyond our scope for this workshop).</p>
 </section>
-<section id="plot-before-you-model" class="level2">
-<h2 class="anchored" data-anchor-id="plot-before-you-model">Plot before you model!</h2>
+<section id="plot-before-you-model" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="plot-before-you-model"><span class="header-section-number">2.2</span> Plot before you model!</h2>
 <p>Your computer will do whatever you tell it to do, even if it’s not a good idea. With this great power comes the responsibility to think, and to check your assumptions.</p>
 <p>The first one to mention is the assumption that there is a relationship between the features and the response, of the type that the model describes. Your first, best way to test that assumption is to plot the data. Summaries like the means, variances, and correlations can only tell you so much. The following example points out why.</p>
 <p>The Datasaurus Dozen are a collection of thirteen data sets. Each consists of two features (x and y) that have the same means, variances, and correlations.</p>
@@ -443,12 +453,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">A Practical Introduction to Regression Modeling</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./02_linear_model.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-title">Linear Regression</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

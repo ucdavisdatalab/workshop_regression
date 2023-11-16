@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>A Practical Introduction to Regression Modeling in R - 6&nbsp; Random and Mixed Effects</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./04_generalized_linear_model.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05_fixed_random_effects.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      <img src="https://datalab.ucdavis.edu/wp-content/uploads/2019/07/datalab-logo-full-color-rgb-1.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">A Practical Introduction to Regression Modeling in R</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ucdavisdatalab/workshop_regression" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">A Practical Introduction to Regression Modeling</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_categorical_continuous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Categorical features</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_generalized_linear_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_fixed_random_effects.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#hierarchical-data" id="toc-hierarchical-data" class="nav-link active" data-scroll-target="#hierarchical-data"><span class="header-section-number">6.1</span> Hierarchical data</a></li>
+  <li><a href="#is-my-effect-fixed-or-random" id="toc-is-my-effect-fixed-or-random" class="nav-link" data-scroll-target="#is-my-effect-fixed-or-random"><span class="header-section-number">6.2</span> Is my effect fixed? Or random?</a></li>
+  <li><a href="#example-oat-yields" id="toc-example-oat-yields" class="nav-link" data-scroll-target="#example-oat-yields"><span class="header-section-number">6.3</span> Example: oat yields</a>
+  <ul class="collapse">
+  <li><a href="#the-oats-data" id="toc-the-oats-data" class="nav-link" data-scroll-target="#the-oats-data"><span class="header-section-number">6.3.1</span> The <code>oats</code> data</a></li>
+  <li><a href="#fixed-effects-model" id="toc-fixed-effects-model" class="nav-link" data-scroll-target="#fixed-effects-model"><span class="header-section-number">6.3.2</span> Fixed-effects model</a></li>
+  <li><a href="#mixed-effects-model" id="toc-mixed-effects-model" class="nav-link" data-scroll-target="#mixed-effects-model"><span class="header-section-number">6.3.3</span> Mixed-effects model</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">6.3.4</span> Interpretation</a></li>
+  <li><a href="#visualize-the-fitted-model" id="toc-visualize-the-fitted-model" class="nav-link" data-scroll-target="#visualize-the-fitted-model"><span class="header-section-number">6.3.5</span> Visualize the fitted model</a></li>
+  </ul></li>
+  <li><a href="#example-sleep-study" id="toc-example-sleep-study" class="nav-link" data-scroll-target="#example-sleep-study"><span class="header-section-number">6.4</span> Example: sleep study</a>
+  <ul class="collapse">
+  <li><a href="#the-sleepstudy-data" id="toc-the-sleepstudy-data" class="nav-link" data-scroll-target="#the-sleepstudy-data"><span class="header-section-number">6.4.1</span> The <code>sleepstudy</code> data</a></li>
+  <li><a href="#random-intercept-model" id="toc-random-intercept-model" class="nav-link" data-scroll-target="#random-intercept-model"><span class="header-section-number">6.4.2</span> Random intercept model</a></li>
+  <li><a href="#random-slope-model" id="toc-random-slope-model" class="nav-link" data-scroll-target="#random-slope-model"><span class="header-section-number">6.4.3</span> Random slope model</a></li>
+  <li><a href="#interpretation-1" id="toc-interpretation-1" class="nav-link" data-scroll-target="#interpretation-1"><span class="header-section-number">6.4.4</span> Interpretation</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Random and Mixed Effects</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>You might have heard of terms like <strong>random effects</strong> and <strong>mixed-effects models</strong>, and perhaps you, like many others before, have found the terms confusing, frightening, and overwhelming. Today we are going to sort all that out!</p>
+<p>To begin, an <strong>effect</strong> is another name for a regression coefficient. Everything we’ve seen so far has been a <strong>fixed effect</strong>, which are treated differently than <strong>random effects</strong>. A regression model can include either fixed effects, random effects, or both. A model that includes both fixed and random effects is said to have <strong>mixed effects</strong>.</p>
+<section id="hierarchical-data" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="hierarchical-data"><span class="header-section-number">6.1</span> Hierarchical data</h2>
+<p>Real-world science often sees data grouped according to some known structure of the study. For instance, in an agricultural experiment, the yield of crops from the same field is generally more alike than crops from different fields, even if all fields in question received the same treatment. Why? Maybe the soil was generally better quality in one field, or one got more rain than the other, or the treatments weren’t applied with perfect consistency across fields.</p>
+<p>In order to account for factors like these, agricultural researchers divide fields into plots and apply a different treatment to each plot. This is an example of hierarchical data: there are measurements of crop yields for each plot in a field. We say that the plots are nested within the fields, and that the field ID is a grouping feature in the data.</p>
+</section>
+<section id="is-my-effect-fixed-or-random" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="is-my-effect-fixed-or-random"><span class="header-section-number">6.2</span> Is my effect fixed? Or random?</h2>
+<p>Hierarchical grouping features can be modeled with either fixed or random effects. The choice depends on your intended interpretation. If you will have a reason to read the estimated coefficient off the summary table, then that’s a fixed effect. If the grouping feature is <em>only</em> included so you can account for structure in the data, then that’s a random effect. Random effects appear both in designed experiments and in observational studies. We’ve mentioned that the measured yield in an agricultural experiment usually depends on the specific conditions of each field. But when an experiment has identified the best way to grow a crop, it will be applied to fields that weren’t in the study. In that case, we care how different the yields will be in random fields that come from the population of farm fields, not the specific fields that were used in the experiment. This is a classic example of a random effect.</p>
+<p>A side note: random effects models make more intuitive sense if you think like a <strong>Bayesian</strong>. For each level of the grouping feature, sample its effect from a random distribution (which almost always has a Normally distributed prior distribution), and then use the sampled effect in the model for the observed response. This two (or more) step process should match the levels of the hierarchy in the data.</p>
+</section>
+<section id="example-oat-yields" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="example-oat-yields"><span class="header-section-number">6.3</span> Example: oat yields</h2>
+<p>Now we will analyze just such an experiment, which tests the production of three varieties of oats grown with four different quantities of nitrogen fertilizer. Together, we call the variety and the nitrogen <strong>treatments</strong> because they are conditions of he experiment that are in our control. The goal is to identify varieties and fertilizers that consistently generate a greater yield of oats than the others.</p>
+<p>In order to identify a consistent difference between treatment combinations, we need to replicate the treatments in multiple <strong>experimental units</strong>. That’s because without replication we will not know whether any differences we observe are due to the treatments or to natural variability (no matter how careful you are to treat plots the same, you cannot grow exactly the same quantity of oats twice).</p>
+<p>How can you achieve replication? If you randomly choose a few areas to measure from within the same plot, then you can estimate the way that parts of a plot differ from each other. Generally this is not very useful because you will go on to grow the oats in different plots than the one in the experiment, and the differences between parts of the same plot are likely to be smaller than the differences between entirely separate plots.</p>
+<p>So in order to accurately estimate how different the yields will be when the oats are grown by farmers instead of experimenters, the experimenters must replicate each treatment in units that are relevant to the farmers - in this case, that means planting multiple plots with each combination of variety and nitrogen. The actual growing conditions will differ slightly even between plots that were given the same treatment and we want to estimate how big those differences are in practice.</p>
+<p>In this case the plots are assigned to <strong>blocks</strong>, which are a group of plots that are linked somehow. In this case blocks are locations, which helps ensure each block has consistent soil and environmental conditions.</p>
+<section id="the-oats-data" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="the-oats-data"><span class="header-section-number">6.3.1</span> The <code>oats</code> data</h3>
+<p>We are finally ready to look at the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(oats)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(oats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   B                V           N            Y        
+ I  :12   Golden.rain:24   0.0cwt:18   Min.   : 53.0  
+ II :12   Marvellous :24   0.2cwt:18   1st Qu.: 86.0  
+ III:12   Victory    :24   0.4cwt:18   Median :102.5  
+ IV :12                    0.6cwt:18   Mean   :104.0  
+ V  :12                                3rd Qu.:121.2  
+ VI :12                                Max.   :174.0  </code></pre>
+</div>
+</div>
+<p>The <code>oats</code> data frame has five columns and 72 rows. Yield (<code>Y</code>, in pounds) will be the response. As features, there are three varieties (<code>V</code>), six blocks (<code>B</code>), and four numerical nitrogen treatments (<code>N</code>). I’ve included a picture of the first 28 rows of data to show you how the data is structured for a random effect.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/blocks.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Picture of the first 28 rows of the <code>oats</code> data set, with shading used to indicate the rows that belong to the same block (<code>B</code>)</figcaption>
+</figure>
+</div>
+<p>The nitrogen treatments are in hundredweight (<code>cwt</code>) per acre, which is a numerical value, but are written as characters. So we will need to convert those to numeric by taking the first three characters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert nitrogen to numeric</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>oats<span class="sc">$</span>nitrogen <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">substr</span>(oats<span class="sc">$</span>N, <span class="dv">1</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s look at a plot of the data:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(oats) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>nitrogen, <span class="at">y=</span>Y, <span class="at">color=</span>V) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>B, <span class="at">ncol=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Nitrogen (cwt/acre)"</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Yield (pounds)"</span>) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Yield of oats per plot (1/160 acre)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/plot-oats-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Each facet depicts the data from one block. There are apparent differences between blocks and an increasing trend of yield with nitrogen. The trend looks like it could be linear. If there is a consistent difference in yield between the varieties, it is small.</p>
+<p>So block matters, even though it is not of interest in the analysis. Treatments were applied and measured at the plot level, so there is one observation per experimental unit. These observations are only independent after accounting for the block grouping - remember that regression assumes the <strong>residuals</strong> are independent.</p>
+</section>
+<section id="fixed-effects-model" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="fixed-effects-model"><span class="header-section-number">6.3.2</span> Fixed-effects model</h3>
+<p>Before stepping into a mixed-effects example, I’d like to show you what it looks like if we model the data using fixed effects for everything. I’ll present the summary but not the diagnostic plots in order to save time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the fixed-effects model</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>oats_fixed_model <span class="ot">=</span> <span class="fu">lm</span>(Y <span class="sc">~</span> nitrogen <span class="sc">+</span> V <span class="sc">+</span> B, <span class="at">data=</span>oats)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(oats_fixed_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Y ~ nitrogen + V + B, data = oats)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-30.519 -12.959   0.781  10.706  34.631 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  113.761      5.652  20.126  &lt; 2e-16 ***
+nitrogen      73.667      8.075   9.123 3.97e-13 ***
+VMarvellous    5.292      4.423   1.196    0.236    
+VVictory      -6.875      4.423  -1.554    0.125    
+BII          -28.083      6.255  -4.490 3.10e-05 ***
+BIII         -39.417      6.255  -6.302 3.23e-08 ***
+BIV          -37.167      6.255  -5.942 1.33e-07 ***
+BV           -44.417      6.255  -7.101 1.33e-09 ***
+BVI          -39.083      6.255  -6.249 3.99e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 15.32 on 63 degrees of freedom
+Multiple R-squared:  0.7155,    Adjusted R-squared:  0.6794 
+F-statistic: 19.81 on 8 and 63 DF,  p-value: 1.507e-14</code></pre>
+</div>
+</div>
+<p>This summary should by now look familiar. As usual we will ignore the <code>Call</code> and <code>Residuals</code> sections. There are coefficient estimates for one intercept, a slope for nitrogem two varieties, and five blocks. Recall that there are three varieties and six blocks: the reference level for each of these categorical features has been included in the intercept. Later, we will return to the coefficient estimates and the residual standard error.</p>
+</section>
+<section id="mixed-effects-model" class="level3" data-number="6.3.3">
+<h3 data-number="6.3.3" class="anchored" data-anchor-id="mixed-effects-model"><span class="header-section-number">6.3.3</span> Mixed-effects model</h3>
+<p>We will treat block as a <strong>random effect</strong> because the blocks are a random sample from the population of blocks where the oats may ultimately be grown, each of which will have its own localized growing conditions. Our random effects analysis allows us to estimate how much of the variability in oat harvest would be due to differences between blocks, vs.&nbsp;differences in nitrogen and variety of oats (which are our <strong>fixed effects</strong> because they are consistent across blocks).</p>
+<section id="software-to-estimate-the-model" class="level4" data-number="6.3.3.1">
+<h4 data-number="6.3.3.1" class="anchored" data-anchor-id="software-to-estimate-the-model"><span class="header-section-number">6.3.3.1</span> Software to estimate the model</h4>
+<p>There are several R packages that implement random effects in regression. <code>lme4</code> is the most-used and <code>brms</code> is the Bayesian equivalent, which also offers some great features that aren’t available in <code>lme4</code>. Both of them use a formula syntax similar to the <code>lm()</code> and <code>glm()</code> functions that you’ve already seen. The only difference is that the random effects need to be specified using a special notation: they are written as two parts wrapped in parentheses. The first part indicates the effect that changes with the grouping factor, and the second part indicates what variable is the grouping factor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a mixed-effects model for oats</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>oats_model <span class="ot">=</span> <span class="fu">lmer</span>(Y <span class="sc">~</span> nitrogen <span class="sc">+</span> V <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>B), <span class="at">data=</span>oats)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># make the residual vs fitted plot for the model:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>fit_v_resid_oats <span class="ot">=</span> <span class="fu">plot</span>(oats_model)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># make the QQ plot:</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>qq_oats <span class="ot">=</span> lattice<span class="sc">::</span><span class="fu">qqmath</span>(oats_model)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># draw the plots</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(fit_v_resid_oats, qq_oats, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/random-effect-model-oats-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show the model summary</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(oats_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: Y ~ nitrogen + V + (1 | B)
+   Data: oats
+
+REML criterion at convergence: 588
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-1.84069 -0.80849  0.04022  0.70484  2.22148 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ B        (Intercept) 245.0    15.65   
+ Residual             234.7    15.32   
+Number of obs: 72, groups:  B, 6
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)   82.400      7.516  10.964
+nitrogen      73.667      8.075   9.123
+VMarvellous    5.292      4.423   1.196
+VVictory      -6.875      4.423  -1.554
+
+Correlation of Fixed Effects:
+            (Intr) nitrgn VMrvll
+nitrogen    -0.322              
+VMarvellous -0.294  0.000       
+VVictory    -0.294  0.000  0.500</code></pre>
+</div>
+</div>
+<p>The residual vs fitted plot has a bit of a fan shape and the QQ plot is not perfect. Maybe there is a better model? More on that later.</p>
+</section>
+</section>
+<section id="interpretation" class="level3" data-number="6.3.4">
+<h3 data-number="6.3.4" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">6.3.4</span> Interpretation</h3>
+<p>First, let’s look at the layout of the summary for a mixed-effects model, beginning with the parts that are already familiar. In the picture below, I’ve highlighted the Call (Green), Residuals (Purple), and Fixed Effects (Red) sections of the <code>lmer()</code> model summary. These are just about the same as the sections in the <code>lm()</code> model summary except that there are no p-values in the Fixed Effects table (due to a philosophical choice by the <code>lme4</code> package developers).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/mixed-effects-summary.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Summary output of a mixed-effects model, with boxes highlighting the Call, Residuals, and Fixed Effects sections</figcaption>
+</figure>
+</div>
+<p>With those out of the way, let’s now look at the parts of the model summary that are new. The REML criterion at convergence is not interesting to us. The correlation of fixed effects is rarely interesting. The only new and useful information, then, is the summary of random effects.</p>
+<p>Again, let’s eliminate the parts that we already know about. The bottom line reports that there are 72 observations and six blocks. Ok, we knew that. What’s left is a table that kind of looks like the fixed effect summary. We’ve got rows for <code>B</code> and <code>Residual</code>, which the table header tells us are called <code>Groups</code>.</p>
+<p><code>B</code> is there because the data are grouped by the blocks. Since that is the only grouping feature, any other variance must be assigned to the individual observations, which we saw in Chapter 2 is called residual variance — hence the name. The random effect for <code>B</code> is a random intercept (more about that later). That leaves two columns, <code>Variance</code> and <code>Std.Dev.</code>. Standard deviation is the square root of variance so these columns are telling us the same thing and we can ignore one of them. Standard deviation is more interesting because it is telling us the typical difference in the yield between blocks (row <code>B</code>), as well as the typical residual error (row <code>Residual</code>).</p>
+<p>While the fixed effects section has the same meaning as the table of coefficient estimates from a fixed-effects model, there is one important difference in the table’s contents: the fixed effects section includes only the intercept, two varieties, and the slope for nitrogen. Blocks are gone from the fixed effects and are instead included in random effects, due to how we specified the model. Despite this difference, the actual fixed effects coefficients and their standard errors are identical to those for the old fixed-effects model. <strong>This is not a general feature of mixed-effects models!</strong> It happens here because the model is perfectly <strong>balanced</strong>, which means that each combination of variety, nitrogen, and block has exactly the same number of observations. Try re-estimating the models after removing some rows from <code>oats</code> at random to see how the estimates change in the two models.</p>
+</section>
+<section id="visualize-the-fitted-model" class="level3" data-number="6.3.5">
+<h3 data-number="6.3.5" class="anchored" data-anchor-id="visualize-the-fitted-model"><span class="header-section-number">6.3.5</span> Visualize the fitted model</h3>
+<p>We have allowed a random intercept for each block, which applies to all of the plots within the block. So, the fitted model should have the same slopes and variety effects in each block, but with a block effect that shifts the regression lines up or down to account for between-block differences. Here is the plot of the data, overlaid with lines to represent the fitted model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># attach a column of fitted values to the oats data.frame</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>oats<span class="sc">$</span>fitted <span class="ot">=</span> <span class="fu">predict</span>(oats_model, <span class="at">newdata=</span>oats)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the data with the fitted model lines</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(oats) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x=</span>nitrogen, <span class="at">y=</span>Y, <span class="at">color=</span>V) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>nitrogen, <span class="at">y=</span>fitted, <span class="at">color=</span>V)) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>B, <span class="at">ncol=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Nitrogen (cwt/acre)"</span>) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Yield (pounds)"</span>) <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Model for yield of oats per plot (1/160 acre)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/fitted-mixed-effects-oats-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<!--
+### Updating the model
+
+Also, I lied earlier: the variety treatments were applied not to plots, but to strips of plots (because the planter is not very maneuverable, it is not practical to plant only one plot). The varieties within each block are therefore a sub-block that we can add as another random effect. Doing so will explain more of the variation, and help estimate how different the yields are between sub-blocks in the same block.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+# add a sub-block feature
+oats$sub_block = interaction(oats$B, oats$V)
+
+# estimate the model with subblocks
+model_oats_subblock =
+  lmer(Y ~ nitrogen + V + (1|B) + (1|sub_block),
+       data=oats)
+
+# show the model summary
+summary(model_oats_subblock)
+```
+
+::: {.cell-output .cell-output-stdout}
+```
+Linear mixed model fit by REML ['lmerMod']
+Formula: Y ~ nitrogen + V + (1 | B) + (1 | sub_block)
+   Data: oats
+
+REML criterion at convergence: 578.9
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-1.62948 -0.65841 -0.07207  0.55785  1.71463 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ sub_block (Intercept) 108.9    10.44   
+ B         (Intercept) 214.5    14.65   
+ Residual              165.6    12.87   
+Number of obs: 72, groups:  sub_block, 18; B, 6
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)   82.400      8.059  10.225
+nitrogen      73.667      6.781  10.863
+VMarvellous    5.292      7.079   0.748
+VVictory      -6.875      7.079  -0.971
+
+Correlation of Fixed Effects:
+            (Intr) nitrgn VMrvll
+nitrogen    -0.252              
+VMarvellous -0.439  0.000       
+VVictory    -0.439  0.000  0.500
+```
+:::
+
+```{.r .cell-code}
+# show the diagnostic plots
+```
+:::
+
+
+
+-->
+</section>
+</section>
+<section id="example-sleep-study" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="example-sleep-study"><span class="header-section-number">6.4</span> Example: sleep study</h2>
+<p>Now let’s look at a different example. Sleep scientists enrolled 18 subjects and kept them in a controlled habitat for ten days. The subjects were only allowed to spend three hours in bed each night, and their reflex reaction time was measured daily.</p>
+<section id="the-sleepstudy-data" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="the-sleepstudy-data"><span class="header-section-number">6.4.1</span> The <code>sleepstudy</code> data</h3>
+<p>This data is available in the <code>lme4</code> package, which you have already imported. Let’s load the data and look at it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sleepstudy)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sleepstudy, <span class="at">n=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Reaction Days Subject
+1  249.5600    0     308
+2  258.7047    1     308
+3  250.8006    2     308
+4  321.4398    3     308
+5  356.8519    4     308
+6  414.6901    5     308
+7  382.2038    6     308
+8  290.1486    7     308
+9  430.5853    8     308
+10 466.3535    9     308
+11 222.7339    0     309
+12 205.2658    1     309
+13 202.9778    2     309
+14 204.7070    3     309
+15 207.7161    4     309
+16 215.9618    5     309
+17 213.6303    6     309
+18 217.7272    7     309
+19 224.2957    8     309
+20 237.3142    9     309</code></pre>
+</div>
+</div>
+<p>There are three columns and 180 rows. The response, <code>Reaction</code>, is numeric, as is the <code>Days</code> feature. <code>Subject</code> refers to a person in the study, so even though the data are numbers, we should treat them as categories. As usual, let’s plot the data.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatterplot of fitted reaction times against Days</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sleepstudy) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> Reaction, <span class="at">color =</span> Subject) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/plot-sleep-data-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Reaction time vs. days by subject"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Days of sleep deprivation"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Reaction time (ms)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$x
+[1] "Days of sleep deprivation"
+
+$y
+[1] "Reaction time (ms)"
+
+$title
+[1] "Reaction time vs. days by subject"
+
+attr(,"class")
+[1] "labels"</code></pre>
+</div>
+</div>
+<p>There is clearly a trend where the reaction time gets longer as more days of sleep deprivation accumulate.</p>
+</section>
+<section id="random-intercept-model" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="random-intercept-model"><span class="header-section-number">6.4.2</span> Random intercept model</h3>
+<p>The goal of the study is to analyze the relationship between days of sleep deprivation and reaction time. So the slope of <code>Days</code> will be estimated as a fixed effect. Observations are grouped within subjects, and we are more interested in the typical differences between individuals than in the reaction times of the specific people who were subjects in this study. So <code>Subject</code> will be a random effect in the model. Let’s begin with the model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the reaction time model</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>reaction_model <span class="ot">=</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>Subject), <span class="at">data=</span>sleepstudy)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#show the model summary</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reaction_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (1 | Subject)
+   Data: sleepstudy
+
+REML criterion at convergence: 1786.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2257 -0.5529  0.0109  0.5188  4.2506 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ Subject  (Intercept) 1378.2   37.12   
+ Residual              960.5   30.99   
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 251.4051     9.7467   25.79
+Days         10.4673     0.8042   13.02
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.371</code></pre>
+</div>
+</div>
+<p>And let’s check the diagnostic plots:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make the residual vs fitted plot for the model:</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fit_v_resid_sleep <span class="ot">=</span> <span class="fu">plot</span>(reaction_model)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># make the QQ plot:</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>qq_sleep <span class="ot">=</span> lattice<span class="sc">::</span><span class="fu">qqmath</span>(reaction_model)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># draw the plots</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(fit_v_resid_sleep, qq_sleep, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/sleep-diag-plots-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>There is a clear fan-shape in the residuals, which indicates that our model may be flawed. Let’s overlay the model on a plot of the data.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict the fitted values from the mixed-effects model</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>sleepstudy<span class="sc">$</span>fitted_reaction <span class="ot">&lt;-</span> <span class="fu">predict</span>(reaction_model)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatterplot of fitted reaction times against Days</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sleepstudy) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> fitted_reaction, <span class="at">color =</span> Subject) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># geom_point() +</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Reaction time vs. days by subject"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Days of sleep deprivation"</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Reaction time (ms)"</span>) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sleepstudy, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>Days, <span class="at">y=</span>Reaction, <span class="at">color=</span>Subject))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/plot-random-intercept-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This gives a nice ilustration of the random intercepts. It also shows us that the residuals are apparently less variable when there are fewer days of sleep deprivation, and get more variable later. We can also see that the colors of the most extreme points seems consistent on both the lower and upper limits of the plot. Looking at those most extreme points, it looks like the orange points at the bottom of the plot are in a flatter slope than the blue dots at the top of the plot. Perhaps a random slope can help model the increasing spread of the responses.</p>
+</section>
+<section id="random-slope-model" class="level3" data-number="6.4.3">
+<h3 data-number="6.4.3" class="anchored" data-anchor-id="random-slope-model"><span class="header-section-number">6.4.3</span> Random slope model</h3>
+<p>The most common kind of random effect is a <strong>random intercept</strong>. That means the effect of a grouping level is a consistent adjustment (increase or decrease) to the response. But random effects can be more complicated, such <strong>random slopes</strong> - where the effect of a continuous variable changes according to the grouping variable.</p>
+<p>Here’s what that means for the sleep study data: the random intercept model assumes that each subject’s reaction time was has somewhat quicker or slower than average, but everyone’s reaction time changes by the same amount each day. This is why all the lines in the last plot are parallel to each other. With random slopes, each subject’s reaction time changes by a personally unique amount each day. Meanwhile, the average change in reaction time per day is the fixed slope of <code>Days</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>random_slope_model <span class="ot">=</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Days<span class="sc">|</span>Subject), <span class="at">data=</span>sleepstudy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Looking at the plot of random effects, we see that the people with the quickest reactions also were less affected by sleep deprivation (lowest lines have the flattest slopes), and the people with the slowest reactions also were most affected by sleep deprivation (highest lines have the steepest slopes.)</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict the fitted values from the mixed-effects model</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>sleepstudy<span class="sc">$</span>random_slope_fitted <span class="ot">&lt;-</span> <span class="fu">predict</span>(random_slope_model)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a scatterplot of fitted reaction times against Days</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sleepstudy) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> random_slope_fitted, <span class="at">color =</span> Subject) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Reaction time vs. days by subject"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Days of sleep deprivation"</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Reaction time (ms)"</span>) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sleepstudy, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>Days, <span class="at">y=</span>Reaction, <span class="at">color=</span>Subject))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/plot-random-slopes-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="interpretation-1" class="level3" data-number="6.4.4">
+<h3 data-number="6.4.4" class="anchored" data-anchor-id="interpretation-1"><span class="header-section-number">6.4.4</span> Interpretation</h3>
+<p>First off, let’s look at the diagnostic plots of the random slope model:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make the residual vs fitted plot for the model:</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>fit_v_resid_rand_slope <span class="ot">=</span> <span class="fu">plot</span>(random_slope_model)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># make the QQ plot:</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>qq_rand_slope <span class="ot">=</span> lattice<span class="sc">::</span><span class="fu">qqmath</span>(random_slope_model)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># draw the plots</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(fit_v_resid_rand_slope, qq_rand_slope, <span class="at">ncol=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="05_fixed_random_effects_files/figure-html/random-slope-diagnostics-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We’ve made progress toward improving the shape of the residual distribution. Most of what look like problems in these figures are due to two subjects who had wildly fluctuating reaction times. You could make an argument to remove those subjects but I don’t think we should be throwing out data that isn’t contaminated so I will choose to keep the model as is. Now check the model summary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(random_slope_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (1 + Days | Subject)
+   Data: sleepstudy
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.10   24.741       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138</code></pre>
+</div>
+</div>
+<p>There are some changes to the random effects part of the summary because there is now a new row under <code>Group:Subject</code> and <code>Name:Days</code>. This row reports the differences in slopes between the subjects. It also has a new column, <code>Corr</code>, which has only one value. It reports the correlation between different random effects applied to the same grouping feature, which in this case are the random intercept and random slope for each subject. The (slightly) positive correlation between the random slope and random intercept confirms that the model sees people with fast reactions as also being less affected by sleep deprivation, and vice versa.</p>
+<!--
+## When to use fixed vs random effects
+
+FIXME: This paragraph ends mid-sentence. 
+
+There isn't a single, definitive check that will tell you when to use random or
+fixed effects. I have come to think of random effects as a form of "partial
+pooling" - a way to do something between the extremes of either treating each
+observation as independent, or fully pooling all observations of each group by
+only using group means as data. With random effects, the amount of pooling is
+adaptive: where the differences between groups are large compared to the
+difference between observations within a group, then the random effect for
+group will have a big influence. But where the differences between individual
+observations is large compared to 
+-->
+<!--
+
+## Prediction in random effects models
+
+
+## Examples:
+
+### Orange trees
+
+For this example, we will investigate orange tree growth using the built-in
+data set `Orange`. You can load the data set via `data(Orange)`. There are
+three columns:
+
+1. `Tree`, which is an ID of which orange tree is being measured;
+2. `age`, which is the number of days since Deember 31, 1969;
+3. `circumference`, which is the circumference of the tree's trunk (in mm).
+
+There are five trees with seven observations each, so there are 35 rows of
+data. First, plot the data:
+
+
+::: {.cell}
+
+```{.r .cell-code}
+# plot the orange tree data
+ggplot(Orange) +
+  aes(x=age, y=circumference, color=Tree) +
+  geom_point()
+```
+
+::: {.cell-output-display}
+![](05_fixed_random_effects_files/figure-html/orange-raw-plot-1.png){width=672}
+:::
+:::
+
+
+This looks like (fairly) linear growth with the same intercept (all the trees appear to have circumference zero at day zero) but slightly different growth rates. So let's use a random slope model.
+
+
+::: {.cell}
+
+```{.r .cell-code}
+model_orange = lmer(circumference ~ (age - 1 | Tree), data=Orange)
+summary(model_orange)
+```
+
+::: {.cell-output .cell-output-stdout}
+```
+Linear mixed model fit by REML ['lmerMod']
+Formula: circumference ~ (age - 1 | Tree)
+   Data: Orange
+
+REML criterion at convergence: 289.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.9824 -0.5130 -0.0082  0.7997  1.6243 
+
+Random effects:
+ Groups   Name Variance  Std.Dev.
+ Tree     age    0.01172  0.1082 
+ Residual      100.93833 10.0468 
+Number of obs: 35, groups:  Tree, 5
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)   17.913      3.642   4.918
+```
+:::
+:::
+
+-->
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./04_generalized_linear_model.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
