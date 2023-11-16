@@ -403,6 +403,8 @@ VVictory    -0.294  0.000  0.500</code></pre>
 <h3 data-number="6.3.5" class="anchored" data-anchor-id="visualize-the-fitted-model"><span class="header-section-number">6.3.5</span> Visualize the fitted model</h3>
 <p>We have allowed a random intercept for each block, which applies to all of the plots within the block. So, the fitted model should have the same slopes and variety effects in each block, but with a block effect that shifts the regression lines up or down to account for between-block differences. Here is the plot of the data, overlaid with lines to represent the fitted model:</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># attach a column of fitted values to the oats data.frame</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>oats<span class="sc">$</span>fitted <span class="ot">=</span> <span class="fu">predict</span>(oats_model, <span class="at">newdata=</span>oats)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -415,6 +417,7 @@ VVictory    -0.294  0.000  0.500</code></pre>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Nitrogen (cwt/acre)"</span>) <span class="sc">+</span></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Yield (pounds)"</span>) <span class="sc">+</span></span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Model for yield of oats per plot (1/160 acre)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="05_fixed_random_effects_files/figure-html/fitted-mixed-effects-oats-1.png" class="img-fluid" width="672"></p>
 </div>
