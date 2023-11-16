@@ -6,8 +6,6 @@ Nearly every day I am asked questions about regression models, and they often se
 Anyway, you've probably heard of and tried regression. Now you're here. Why? I don't know. Hopefully this will help!
 
 ## Data
-The data for a regression model are typically in a spreadsheet format, where each row of data is called an *observation* and each column is called a *feature* (aka *predictor*, *input*, or *independent variable*). The column that is the outcome of the model is called the *response* (aka *output*, *target*, or *dependent variable*). Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
-
 The data for a linear model are typically in a tabular format (imagine a spreadsheet), where each row of data is called an **observation** and each column is called a **feature**. The column that is the outcome of the model is called the **response**. Each observation should include a value for every feature (there are some ways of handling missing data but that's beyond our scope for this workshop).
 
 ## Plot before you model!
