@@ -15,14 +15,14 @@ book:
   date-format: D MMMM, YYYY
   search: true
   repo-url: https://github.com/ucdavisdatalab/workshop_regression
-
+  
   chapters:
     - index.qmd
     - 01_introduction.qmd
     - 02_linear_model.qmd
     - 03_categorical_continuous.qmd
     - 04_generalized_linear_model.qmd
-    #- 05_fixed_random_effects.qmd
+    - 05_fixed_random_effects.qmd
     #- 06_conclusion.qmd
   
   sidebar:
@@ -33,4 +33,5 @@ book:
 format:
   html:
     theme: cosmo
-    number-sections: false
+    number-sections: true
+  
