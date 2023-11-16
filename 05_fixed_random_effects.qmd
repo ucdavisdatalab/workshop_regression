@@ -151,6 +151,9 @@ While the fixed effects section has the same meaning as the table of coefficient
 We have allowed a random intercept for each block, which applies to all of the plots within the block. So, the fitted model should have the same slopes and variety effects in each block, but with a block effect that shifts the regression lines up or down to account for between-block differences. Here is the plot of the data, overlaid with lines to represent the fitted model:
 
 ```{r fitted-mixed-effects-oats}
+#| code-fold: true
+#| message: false
+#| warning: false
 # attach a column of fitted values to the oats data.frame
 oats$fitted = predict(oats_model, newdata=oats)
 
