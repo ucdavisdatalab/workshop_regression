@@ -1,170 +1,337 @@
 # Random and Mixed Effects
 
-You might have heard of terms like "random effects" and "mixed-effects models", and perhaps you, like many others before, have found the terms confusing, frightening, and overwhelming. Today we are going to sort all that out!
-
-To begin, an "effect" is another name for a regression coefficient. It's a name that makes the most intuitive sense for a categorical feature in a designed experiment, where you might say that the effect of applying fertilizer formula C to a plot is to increase the crop yield by 35 kilograms over the control treatment.
-
-That example (like everything we've seen so far) is a fixed effect, which are treated differently than random effects. A regression model can include either fixed effects, random effects, or both. A model that includes both fixed and random effects is said to have "mixed effects".
-
-
-## Is my effect fixed? Or random?
-We have looked at several examples of regression models. For the examples, I have intentionally chosen data with a pretty simple structure: differences in the response are attributed either to features that we are studying or to independent random noise. All of the coefficients we've estimated are fixed effects. We encounter random effects when differences in the response are due to features that are not of interest in the study, or the randomness is not independent.
-
-We encounter random effects when the observations are grouped in ways that matter to the response but are not of interest in the study. Examples arise in designed experiments and in observational studies.
-
-
-Imagine an experiment to test a new technique of teaching middle school math. Different classes are randomly assigned to be taught by the new or the old method, and after a quarter all of the students take a test to assess their learning. The analysis is mainly interested in estimating what effect the teaching method has on a student's test score.
-
-The actual instruction may differ slightly even between classes that were taught according to the same method. So class matters, even though it is not of interest in the analysis. Teaching method was applied at the classroom level and measured at the student level, so there are several independent observations of each class. They are  independent because one student's score shouldn't affect anyone else (we don't consider students copying from each other). Those observations are only independent after accounting for the class grouping - remember that regression assumes the *residuals* are independent.
-
-We could model the data by calculating the average test score within each class, which takes care of dependence between the scores within a class. But in that case, we lose any information about how the typical difference between individual students in the same class compares to the average score difference between classes.
-
-Alternatively, we could treat class as a fixed effect and use the methods that we've already learned so far. But in that case, we would measure the differences between specific classes rather than the typical difference between classes in the abstract. This abstract is more relevant for the purposes of the described experiment because if the new teaching method is adopted it will be applied in new classes that may resemble the overall cohort of classes in the study, but will not exactly match the conditions of any one class.
-
-This distinction between the cohort and the specific classes is why we call the classroom effect a "random effect". We consider the specific classes to be a random sample from an abstract population of classrooms. This specific sample makes up the cohort in the study and provides an estimate of the typical difference in the population. That typical population difference is what will come up in future applications of the new teaching method, and therefore is more important to our application of this study than is the specific cohort effects, which we could estimate as fixed effects.
-
-<!---Imagine a clinical trial to test the effectiveness of a new drug that is intended to treat high blood pressure. Patients are enrolled at several hospitals across the country and assigned to either get the new drug or get a placebo. The response is each patient's blood pressure after two months taking their assigned treatment. Clearly, the analysis is mainly interested in the effect on blood pressure of whether a patient was assigned take the ew drug or the placebo. But there are demographic, environmental, and economic differences between regions that may affect the blood pressure too, and so patients at the same hospital are probably more alike in general than patients at different hospitals. So because the --->
-
-
-
-
-
-
 ```{r hidden-load}
 #| echo: false
 #| include: false
 
 # import packages and get a small version of the penguins data
-library(palmerpenguins)
+library(MASS)
 library(ggplot2)
 library(dplyr)
 library(lme4)
-
-data(penguins)
-penguins_small = subset(penguins, !is.na(body_mass_g)) |>
-  split(f=~species) |>
-  lapply(function(x) subset(x, c(rep(TRUE, 5), rep(FALSE, nrow(x)-5)))) |>
-  bind_rows()
+library(cowplot)
 ```
 
 
-## Fixed effects
+You might have heard of terms like **random effects** and **mixed-effects models**, and perhaps you, like many others before, have found the terms confusing, frightening, and overwhelming. Today we are going to sort all that out!
 
-The effects we've seen so far are often called **fixed effects**. That's
-because the treatment is expected to have the same effect if the experiment
-were repeated. That fixed value is in contrast to **random effects**, which are
-taken from a random distribution and are expected to be different in a
-hypothetical repetition of the experiment.
+To begin, an **effect** is another name for a regression coefficient. Everything we've seen so far has been a **fixed effect**, which are treated differently than **random effects**. A regression model can include either fixed effects, random effects, or both. A model that includes both fixed and random effects is said to have **mixed effects**.
 
-<!-- FIXME: Same header appears twice. -->
-
-## Random effects
-
+## Hierarchical data
 Real-world science often sees data grouped according to some known structure of
-the study. For instance, in an agricultural experiment, the yield of plants
-from the same field is generally more alike than plants from different fields,
+the study. For instance, in an agricultural experiment, the yield of crops
+from the same field is generally more alike than crops from different fields,
 even if all fields in question received the same treatment. Why? Maybe the soil
 was generally better quality in one field, or one got more rain than the other,
 or the treatments weren't applied with perfect consistency across fields.
 
 In order to account for factors like these, agricultural researchers divide
-fields into plots and apply a different treatment to each plot. Then two
-measurements from the same plot are generally more alike than two from
-different plots, even in the same field. By the same reasoning, measurements
-from two plots in the same field are generally more alike than measurements
-from two plots in different fields. This is an example of hierarchical data:
-there are several individual measurements from plants in each plot. We say that
-the measurements are nested within the plots, and the plots are nested within
-the fields. 
+fields into plots and apply a different treatment to each plot. This is an example of hierarchical data: there are  measurements of crop yields for each plot in a field. We say that the plots are nested within the fields, and that the field ID is a grouping feature in the data.
 
+## Is my effect fixed? Or random?
+Hierarchical grouping features can be modeled with either fixed or random effects. The choice depends on your intended interpretation. If you will have a reason to read the estimated coefficient off the summary table, then that's a fixed effect. If the grouping feature is *only* included so you can account for structure in the data, then that's a random effect.  Random effects appear both in designed experiments and in observational studies. We've mentioned that the measured yield in an agricultural experiment usually depends on the specific conditions of each field. But when an experiment has identified the best way to grow a crop, it will be applied to fields that weren't in the study. In that case, we care how different the yields will be in random fields that come from the population of farm fields, not the specific fields that were used in the experiment. This is a classic example of a random effect.
 
-## Random effects
+A side note: random effects models make more intuitive sense if you think like a **Bayesian**. For each level of the grouping feature, sample its effect from a random distribution (which almost always has a Normally distributed prior distribution), and then use the sampled effect in the model for the observed response. This two (or more) step process should match the levels of the hierarchy in the data.
 
-Random effects are a way to account for variation in data that arises due to grouping or clustering of observations. They are used in regression models when there is a hierarchy or structure in the data, and the observations within each group are expected to be correlated.
+## Example: oat yields
+Now we will analyze just such an experiment, which tests the production of three varieties of oats grown with four different quantities of nitrogen fertilizer. Together, we call the variety and the nitrogen **treatments** because they are conditions of he experiment that are in our control. The goal is to identify varieties and fertilizers that consistently generate a greater yield of oats than the others.
 
-For example, in a study involving students from different schools, random effects can be used to capture the inherent differences between schools, which may affect the dependent variable (e.g., test scores). Random effects are modeled as deviations from the overall population-level effects.
+In order to identify a consistent difference between treatment combinations, we need to replicate the treatments in multiple **experimental units**. That's because without replication we will not know whether any differences we observe are due to the treatments or to natural variability (no matter how careful you are to treat plots the same, you cannot grow exactly the same quantity of oats twice).
 
+How can you achieve replication? If you randomly choose a few areas to measure from within the same plot, then you can estimate the way that parts of a plot differ from each other. Generally this is not very useful because you will go on to grow the oats in different plots than the one in the experiment, and the differences between parts of the same plot are likely to be smaller than the differences between entirely separate plots.
 
-## Using random effects in regression
+So in order to accurately estimate how different the yields will be when the oats are grown by farmers instead of experimenters, the experimenters must replicate each treatment in units that are relevant to the farmers - in this case, that means planting multiple plots with each combination of variety and nitrogen. The actual growing conditions will differ slightly even between plots that were given the same treatment and we want to estimate how big those differences are in practice.
+
+In this case the plots are assigned to **blocks**, which are a group of plots that are linked somehow. In this case blocks are locations, which helps ensure each block has consistent soil and environmental conditions.
+
+### The `oats` data
+We are finally ready to look at the data.
+
+```{r load-oats-data}
+#| warning: false
+#| error: false
+library(MASS)
+data(oats)
+summary(oats)
+```
+
+The `oats` data frame has five columns and 72 rows. Yield (`Y`, in pounds) will be the response. As features, there are three varieties (`V`), six blocks (`B`), and four numerical nitrogen treatments (`N`). I've included a picture of the first 28 rows of data to show you how the data is structured for a random effect.
+
+![Picture of the first 28 rows of the `oats` data set, with shading used to indicate the rows that belong to the same block (`B`)](img/blocks.png)
+
+The nitrogen treatments are in hundredweight (`cwt`) per acre, which is a numerical value, but are written as characters. So we will need to convert those to numeric by taking the first three characters.
+
+```{r nitrogen-to-numeric}
+#| warning: false
+#| error: false
+# convert nitrogen to numeric
+oats$nitrogen = as.numeric(substr(oats$N, 1, 3))
+```
+
+Now let's look at a plot of the data:
+
+```{r plot-oats}
+#| warning: false
+#| message: false
+#| code-fold: true
+ggplot(oats) +
+  aes(x=nitrogen, y=Y, color=V) +
+  geom_point() +
+  facet_wrap(~B, ncol=3) +
+  xlab("Nitrogen (cwt/acre)") +
+  ylab("Yield (pounds)") +
+  ggtitle("Yield of oats per plot (1/160 acre)")
+```
+
+Each facet depicts the data from one block. There are apparent differences between blocks and an increasing trend of yield with nitrogen. The trend looks like it could be linear. If there is a consistent difference in yield between the varieties, it is small.
+
+So block matters, even though it is not of interest in the analysis. Treatments were applied and measured at the plot level, so there is one observation per experimental unit. These observations are only independent after accounting for the block grouping - remember that regression assumes the **residuals** are independent.
+
+### Fixed-effects model
+
+Before stepping into a mixed-effects example, I'd like to show you what it looks like if we model the data using fixed effects for everything. I'll present the summary but not the diagnostic plots in order to save time.
+
+```{r oats-fixed-effects}
+# estimate the fixed-effects model
+oats_fixed_model = lm(Y ~ nitrogen + V + B, data=oats)
+summary(oats_fixed_model)
+```
+
+This summary should by now look familiar. As usual we will ignore the `Call` and `Residuals` sections. There are coefficient estimates for one intercept, a slope for nitrogem two varieties, and five blocks. Recall that there are three varieties and six blocks: the reference level for each of these categorical features has been included in the intercept. Later, we will return to the coefficient estimates and the residual standard error.
+
+### Mixed-effects model
+
+We will treat block as a **random effect** because the blocks are a random sample from the population of blocks where the oats may ultimately be grown, each of which will have its own localized growing conditions. Our random effects analysis allows us to estimate how much of the variability in oat harvest would be due to differences between blocks, vs. differences in nitrogen and variety of oats (which are our **fixed effects** because they are consistent across blocks).
+
+#### Software to estimate the model
 
 There are several R packages that implement random effects in regression.
-`lme4` is the most-used and `brms` is the Bayesian equivalent (which also
-offers some great features that aren't available in `lme4`.) Both of them use a
+`lme4` is the most-used and `brms` is the Bayesian equivalent, which also
+offers some great features that aren't available in `lme4`. Both of them use a
 formula syntax similar to the `lm()` and `glm()` functions that you've already
 seen. The only difference is that the random effects need to be specified using
 a special notation: they are written as two parts wrapped in parentheses. The
 first part indicates the effect that changes with the grouping factor, and the
 second part indicates what variable is the grouping factor.
 
-```{r random-effects-model}
-re_model = lmer(Reaction ~ Days + (1|Subject), data=sleepstudy)
+```{r random-effect-model-oats}
+# create a mixed-effects model for oats
+oats_model = lmer(Y ~ nitrogen + V + (1|B), data=oats)
+
+# make the residual vs fitted plot for the model:
+fit_v_resid_oats = plot(oats_model)
+
+# make the QQ plot:
+qq_oats = lattice::qqmath(oats_model)
+
+# draw the plots
+cowplot::plot_grid(fit_v_resid_oats, qq_oats, ncol=2)
+
+# show the model summary
+summary(oats_model)
+```
+
+The residual vs fitted plot has a bit of a fan shape and the QQ plot is not perfect. Maybe there is a better model? More on that later.
+
+### Interpretation
+First, let's look at the layout of the summary for a mixed-effects model, beginning with the parts that are already familiar. In the picture below, I've highlighted the Call (Green), Residuals (Purple), and Fixed Effects (Red) sections of the `lmer()` model summary. These are just about the same as the sections in the `lm()` model summary except that there are no p-values in the Fixed Effects table (due to a philosophical choice by the `lme4` package developers).
+
+![Summary output of a mixed-effects model, with boxes highlighting the Call, Residuals, and Fixed Effects sections](img/mixed-effects-summary.png)
+
+With those out of the way, let's now look at the parts of the model summary that are new. The REML criterion at convergence is not interesting to us. The correlation of fixed effects is rarely interesting. The only new and useful information, then, is the summary of random effects.
+
+Again, let's eliminate the parts that we already know about. The bottom line reports that there are 72 observations and six blocks. Ok, we knew that. What's left is a table that kind of looks like the fixed effect summary. We've got rows for `B` and `Residual`, which the table header tells us  are called `Groups`.
+
+`B` is there because the data are grouped by the blocks. Since that is the only grouping feature, any other variance must be assigned to the individual observations, which we saw in Chapter 2 is called residual variance — hence the name. The random effect for `B` is a random intercept (more about that later). That leaves two columns, `Variance` and `Std.Dev.`. Standard deviation is the square root of variance so these columns are telling us the same thing and we can ignore one of them. Standard deviation is more interesting because it is telling us the typical difference in the yield between blocks (row `B`), as well as the typical residual error (row `Residual`). 
+
+While the fixed effects section has the same meaning as the table of coefficient estimates from a fixed-effects model, there is one important difference in the table's contents: the fixed effects section includes only the intercept, two varieties, and the slope for nitrogen. Blocks are gone from the fixed effects and are instead included in random effects, due to how we specified the model. Despite this difference, the actual fixed effects coefficients and their standard errors are identical to those for the old fixed-effects model. **This is not a general feature of mixed-effects models!** It happens here because the model is perfectly **balanced**, which means that each combination of variety, nitrogen, and block has exactly the same number of observations. Try re-estimating the models after removing some rows from `oats` at random to see how the estimates change in the two models.
+
+
+### Visualize the fitted model
+We have allowed a random intercept for each block, which applies to all of the plots within the block. So, the fitted model should have the same slopes and variety effects in each block, but with a block effect that shifts the regression lines up or down to account for between-block differences. Here is the plot of the data, overlaid with lines to represent the fitted model:
+
+```{r fitted-mixed-effects-oats}
+# attach a column of fitted values to the oats data.frame
+oats$fitted = predict(oats_model, newdata=oats)
+
+# plot the data with the fitted model lines
+ggplot(oats) +
+  aes(x=nitrogen, y=Y, color=V) +
+  geom_point() +
+  geom_line(mapping=aes(x=nitrogen, y=fitted, color=V)) +
+  facet_wrap(~B, ncol=3) +
+  xlab("Nitrogen (cwt/acre)") +
+  ylab("Yield (pounds)") +
+  ggtitle("Model for yield of oats per plot (1/160 acre)")
 ```
 
 
+<!--
+### Updating the model
+
+Also, I lied earlier: the variety treatments were applied not to plots, but to strips of plots (because the planter is not very maneuverable, it is not practical to plant only one plot). The varieties within each block are therefore a sub-block that we can add as another random effect. Doing so will explain more of the variation, and help estimate how different the yields are between sub-blocks in the same block.
+
+```{r oats-sub-blocks}
+# add a sub-block feature
+oats$sub_block = interaction(oats$B, oats$V)
+
+# estimate the model with subblocks
+model_oats_subblock =
+  lmer(Y ~ nitrogen + V + (1|B) + (1|sub_block),
+       data=oats)
+
+# show the model summary
+summary(model_oats_subblock)
+
+# show the diagnostic plots
+
+```
+
+
+-->
+
+
+## Example: sleep study
+Now let's look at a different example. Sleep scientists enrolled 18 subjects and kept them in a controlled habitat for ten days. The subjects were only allowed to spend three hours in bed each night, and their reflex reaction time was measured daily.
+
+### The `sleepstudy` data
+This data is available in the `lme4` package, which you have already imported. Let's load the data and look at it.
+
+```{r import-sleep-data}
+#| error: false
+#| message: false
+#| warning: false
+data(sleepstudy)
+head(sleepstudy, n=20)
+```
+
+There are three columns and 180 rows. The response, `Reaction`, is numeric, as is the `Days` feature. `Subject` refers to a person in the study, so even though the data are numbers, we should treat them as categories. As usual, let's plot the data.
+
+```{r plot-sleep-data}
+#| code-fold: true
+#| message: false
+#| warning: false
+# Create a scatterplot of fitted reaction times against Days
+ggplot(sleepstudy) +
+  aes(x = Days, y = Reaction, color = Subject) +
+   geom_point() 
+   labs(title = "Reaction time vs. days by subject",
+        x = "Days of sleep deprivation",
+        y = "Reaction time (ms)")
+```
+There is clearly a trend where the reaction time gets longer as more days of sleep deprivation accumulate.
+
+### Random intercept model
+
+The goal of the study is to analyze the relationship between days of sleep deprivation and reaction time. So the slope of `Days` will be estimated as a fixed effect. Observations are grouped within subjects, and we are more interested in the typical differences between individuals than in the reaction times of the specific people who were subjects in this study. So `Subject` will be a random effect in the model. Let's begin with the model: 
+
+```{r random-effects-model}
+# estimate the reaction time model
+reaction_model = lmer(Reaction ~ Days + (1|Subject), data=sleepstudy)
+
+#show the model summary
+summary(reaction_model)
+```
+
+
+And let's check the diagnostic plots:
+```{r sleep-diag-plots}
+#| warning: false
+#| message: false
+#| code-fold: true
+# make the residual vs fitted plot for the model:
+fit_v_resid_sleep = plot(reaction_model)
+
+# make the QQ plot:
+qq_sleep = lattice::qqmath(reaction_model)
+
+# draw the plots
+cowplot::plot_grid(fit_v_resid_sleep, qq_sleep, ncol=2)
+```
+There is a clear fan-shape in the residuals, which indicates that our model may be flawed. Let's overlay the model on a plot of the data.
+
 ```{r plot-random-intercept}
+#| code-fold: true
 # Predict the fitted values from the mixed-effects model
-sleepstudy$fitted_reaction <- predict(re_model)
+sleepstudy$fitted_reaction <- predict(reaction_model)
 
 # Create a scatterplot of fitted reaction times against Days
 ggplot(sleepstudy) +
   aes(x = Days, y = fitted_reaction, color = Subject) +
    # geom_point() +
    geom_line() +
-   labs(title = "Fitted Reaction Time vs. Days by Subject",
-        x = "Days",
-        y = "Fitted Reaction Time (ms)") +
+   labs(title = "Reaction time vs. days by subject",
+        x = "Days of sleep deprivation",
+        y = "Reaction time (ms)") +
   geom_point(data=sleepstudy, mapping=aes(x=Days, y=Reaction, color=Subject))
 ```
+This gives a nice ilustration of the random intercepts. It also shows us that the residuals are apparently less variable when there are fewer days of sleep deprivation, and get more variable later. We can also see that the colors of the most extreme points seems consistent on both the lower and upper limits of the plot. Looking at those most extreme points, it looks like the orange points at the bottom of the plot are in a flatter slope than the blue dots at the top of the plot. Perhaps a random slope can help model the increasing spread of the responses.
 
-
-### Random intercepts and slopes
+### Random slope model
 
 The most common kind of random effect is a **random intercept**. That means the
 effect of a grouping level is a consistent adjustment (increase or decrease) to
-the response. But random effects can be more complicated, such **random
-slopes** - where the effect of a continuous variable changes according to the
+the response. But random effects can be more complicated, such **random slopes** - where the effect of a continuous variable changes according to the
 grouping variable.
 
-Here's an example using the sleep study data: the difference is that now the
-random effect of subject is not only that each subject was has somewhat quicker
-or slower reflexes that change by the same amount each day. Instead, each
-subject has somewhat quicker or slower reflexes that change by a personally
-unique amount each day (meanwhile, we have still estimated the fixed effect of
-days - which is the amount that an average person's reaction time slowed down
-with each day of sleep deprivation.
+Here's what that means for the sleep study data: the random intercept model assumes
+that each subject's reaction time was has somewhat quicker
+or slower than average, but everyone's reaction time changes by the same amount each day. This is why all the lines in the last plot are parallel to each other. With random slopes, each
+subject's reaction time changes by a personally
+unique amount each day. Meanwhile, the average change in reaction time per day is the fixed  slope of `Days`.
 
 ```{r random-slope-model}
-random_slope_model = lmer(Reaction ~ Days + (1 + Days|Subject), data=sleepstudy)
+random_slope_model =
+  lmer(Reaction ~ Days + (1 + Days|Subject), data=sleepstudy)
 ```
 
 Looking at the plot of random effects, we see that the people with the quickest reactions also were less affected by sleep deprivation (lowest lines have the flattest slopes), and the people with the slowest reactions also were most affected by sleep deprivation (highest lines have the steepest slopes.)
 
 ```{r plot-random-slopes}
+#| warning: false
+#| message: false
+#| code-fold: true
 # Predict the fitted values from the mixed-effects model
 sleepstudy$random_slope_fitted <- predict(random_slope_model)
 
 # Create a scatterplot of fitted reaction times against Days
 ggplot(sleepstudy) +
   aes(x = Days, y = random_slope_fitted, color = Subject) +
-   # geom_point() +
    geom_line() +
-   labs(title = "Fitted Reaction Time vs. Days by Subject",
-        x = "Days",
-        y = "Fitted Reaction Time (ms)") +
+   labs(title = "Reaction time vs. days by subject",
+        x = "Days of sleep deprivation",
+        y = "Reaction time (ms)") +
   geom_point(data=sleepstudy, mapping=aes(x=Days, y=Reaction, color=Subject))
 ```
 
+### Interpretation
+First off, let's look at the diagnostic plots of the random slope model:
 
-This is also seen in the model summary, where there is a (slightly) positive correlation between the random slope and random intercept.
+```{r random-slope-diagnostics}
+#| warning: false
+#| message: false
+#| code-fold: true
+# make the residual vs fitted plot for the model:
+fit_v_resid_rand_slope = plot(random_slope_model)
+
+# make the QQ plot:
+qq_rand_slope = lattice::qqmath(random_slope_model)
+
+# draw the plots
+cowplot::plot_grid(fit_v_resid_rand_slope, qq_rand_slope, ncol=2)
+```
+We've made progress toward improving the shape of the residual distribution. Most of what look like problems in these figures are due to two subjects who had wildly fluctuating reaction times. You could make an argument to remove those subjects but I don't think we should be throwing out data that isn't contaminated so I will choose to keep the model as is. Now check the model summary. 
 
 ```{r random-slope-sleep-summary}
 summary(random_slope_model)
 ```
 
+There are some changes to the random effects part of the summary because there is now a new row under `Group:Subject` and `Name:Days`. This row reports the differences in slopes between the subjects. It also has a new column, `Corr`, which has only one value. It reports the correlation between different random effects applied to the same grouping feature, which in this case are the random intercept and random slope for each subject. The (slightly) positive correlation between the random slope and random intercept confirms that the model sees people with fast reactions as also being less affected by sleep deprivation, and vice versa.
 
+<!--
 ## When to use fixed vs random effects
 
-<!-- FIXME: This paragraph ends mid-sentence. -->
+FIXME: This paragraph ends mid-sentence. 
 
 There isn't a single, definitive check that will tell you when to use random or
 fixed effects. I have come to think of random effects as a form of "partial
@@ -175,6 +342,10 @@ adaptive: where the differences between groups are large compared to the
 difference between observations within a group, then the random effect for
 group will have a big influence. But where the differences between individual
 observations is large compared to 
+-->
+<!--
+
+## Prediction in random effects models
 
 
 ## Examples:
@@ -205,3 +376,4 @@ This looks like (fairly) linear growth with the same intercept (all the trees ap
 model_orange = lmer(circumference ~ (age - 1 | Tree), data=Orange)
 summary(model_orange)
 ```
+-->
