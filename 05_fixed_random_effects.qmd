@@ -110,9 +110,9 @@ There are several R packages that implement random effects in regression.
 offers some great features that aren't available in `lme4`. Both of them use a
 formula syntax similar to the `lm()` and `glm()` functions that you've already
 seen. The only difference is that the random effects need to be specified using
-a special notation: they are written as two parts wrapped in parentheses. The
-first part indicates the effect that changes with the grouping factor, and the
-second part indicates what variable is the grouping factor.
+a special notation: they are written as two parts wrapped in parentheses and separated by a vertical bar (`|`). The
+first part indicates which effect changes between groups, and the
+second part identifies the grouping feature.
 
 ```{r random-effect-model-oats}
 # create a mixed-effects model for oats
